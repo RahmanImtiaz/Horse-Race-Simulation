@@ -77,9 +77,9 @@ public class Horse
         return this.fallen;
     }
 
-    public void moveForward()
-    {
-        this.distanceTravelled++;
+    public void moveForward() {
+        this.distanceTravelled += 10; // Move the horse 10 units forward
+        this.horseLabel.setLocation(this.distanceTravelled, this.horseLabel.getLocation().y); // Update the JLabel's position
     }
 
     public void setConfidence(double newConfidence)
@@ -95,6 +95,15 @@ public class Horse
     public void setHorseGUI(JLabel newLabel)
     {
         this.horseLabel = newLabel;
+    }
+
+    public JLabel getHorseGUI()
+    {
+        if (this.fallen == true)
+        {
+            return new JLabel("X");
+        }
+        return this.horseLabel;
     }
 
     public void setName(String newName)

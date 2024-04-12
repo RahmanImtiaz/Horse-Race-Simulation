@@ -22,6 +22,7 @@ public class Race {
     private Horse lane2Horse;
     private Horse lane3Horse;
     private JPanel panel;
+    private JFrame frame;
 
     /**
      * Constructor for objects of class Race
@@ -188,7 +189,7 @@ public class Race {
      * 
      * @param theHorse the horse to be moved
      */
-    private void moveHorse(Horse theHorse) {
+    public void moveHorse(Horse theHorse) {
         // if the horse has fallen it cannot move,
         // so only run if it has not fallen
 
@@ -214,7 +215,7 @@ public class Race {
      * @return true if the horse has won, false otherwise.
      */
     private boolean raceWonBy(Horse theHorse) {
-        if (theHorse != null && theHorse.getDistanceTravelled() == raceLength) {
+        if (theHorse != null && theHorse.getDistanceTravelled() == (raceLength*10)) {
             return true;
         } else {
             return false;
@@ -298,7 +299,7 @@ public class Race {
     }
 
     public void startRaceGUI() {
-        JFrame frame = new JFrame("HorseRaceSimulator");
+        frame = new JFrame("HorseRaceSimulator");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1000, 800);
         frame.setResizable(false);
@@ -448,6 +449,8 @@ public class Race {
             horseDesignPanel.add(Colourlabel);
 
             JButton button = new JButton();
+            button.setPreferredSize(new Dimension(300, 20));
+            button.setAlignmentX(Component.CENTER_ALIGNMENT);
             final int finalI = i; // Create a final copy of i
             button.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
@@ -456,7 +459,7 @@ public class Race {
                     if (color != null) {
                         button.setBackground(color);
 
-                        JLabel horseLabel = new JLabel(new HorseIcon(color));
+                        JLabel horseLabel = new JLabel(new HorseIcon(trackColour, color));
                         if (finalI == 1) { // Use finalI instead of i
                             lane1Horse.setHorseGUI(horseLabel);
                         } else if (finalI == 2) { // Use finalI instead of i
@@ -517,7 +520,7 @@ public class Race {
                             System.out.println(
                                     "Name: " + lane3Horse.getName() + ", Confidence: " + lane3Horse.getConfidence());
                         }
-                        
+
                     } else {
                         JOptionPane.showMessageDialog(null, "Invalid input. Please enter a number between 0 and 1.");
                         return;
@@ -543,19 +546,57 @@ public class Race {
     }
 
     private void startGUI() {
-        // Code to start the race
-        // Remove all components from the panel
-        panel.removeAll();
+        // Gets rid of menu window as it is no longer needed
+        frame.dispose();
 
-        // Create a new panel
-        JPanel raceDesignPanel = new JPanel();
-        raceDesignPanel.setLayout(new BoxLayout(raceDesignPanel, BoxLayout.Y_AXIS));
+        // Create a new RaceFrame
+        RaceFrame raceFrame = new RaceFrame(trackColour, raceLength, horseNum, lane1Horse, lane2Horse, lane3Horse);
 
-        // Add the new panel to the original panel
-        panel.add(raceDesignPanel);
+        // Create a Timer that updates the horse positions and repaints the GUI every
+        // 100 milliseconds
+        Timer timer = new Timer(100, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Update the positions of the horses
+                Horse theHorse = null;
+                if (lane1Horse != null) {
+                    moveHorse(lane1Horse);
+                }
+    
+                if (lane2Horse != null) {
+                    moveHorse(lane2Horse);
+                }
+    
+                if (lane3Horse != null) {
+                    moveHorse(lane3Horse);
+                }
 
-        // Refresh the panel
-        panel.revalidate();
-        panel.repaint();
+                // Check if any horse has won the race
+                if (raceWonBy(lane1Horse) || raceWonBy(lane2Horse) || raceWonBy(lane3Horse)) {
+                    ((Timer) e.getSource()).stop(); // Stop the timer
+                    // Display a message that the race is over
+                    JOptionPane.showMessageDialog(raceFrame, "The race is over!");
+                    // Display the winner
+                    if (raceWonBy(lane1Horse)) {
+                        JOptionPane.showMessageDialog(raceFrame, "And the winner is " + lane1Horse.getName() + " ");
+                    } else if (raceWonBy(lane2Horse)) {
+                        JOptionPane.showMessageDialog(raceFrame, "And the winner is " + lane2Horse.getName() + " ");
+                    } else {
+                        JOptionPane.showMessageDialog(raceFrame, "And the winner is " + lane3Horse.getName() + " ");
+                    }
+                }
+
+                // Repaint the GUI to reflect the new positions of the horses
+                raceFrame.repaint();
+            }
+        });
+        timer.start(); // Start the timer
+    }
+
+    private void printHorseGUI(Horse theHorse ){
+        System.out.print('\u000C'); // clear the terminal window
+
+        int spacesBefore = theHorse.getDistanceTravelled();
+        int spacesAfter = raceLength - theHorse.getDistanceTravelled();
     }
 }
