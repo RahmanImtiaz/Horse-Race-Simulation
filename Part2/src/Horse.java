@@ -1,3 +1,5 @@
+import java.text.DecimalFormat;
+
 import javax.swing.JLabel;
 
 /**
@@ -84,7 +86,8 @@ public class Horse
 
     public void setConfidence(double newConfidence)
     {
-        this.confidence = newConfidence;
+        DecimalFormat df = new DecimalFormat("#.0");
+        this.confidence = Double.valueOf(df.format(newConfidence));
     }
     
     public void setSymbol(char newSymbol)

@@ -127,6 +127,17 @@ public class Race {
         }
     }
 
+    public void changeHorseConfidence(Horse horse) {
+
+        if (horse != null) {
+            if (raceWonBy(horse)) {
+                horse.setConfidence(horse.getConfidence() + 0.1);
+            } else if (horse.hasFallen()) {
+                horse.setConfidence(horse.getConfidence() - 0.1);
+            }
+        }
+    }
+
     public void createAndAddHorses() {
         Scanner sc = new Scanner(System.in);
 
@@ -198,6 +209,7 @@ public class Race {
             // the probability that the horse will move forward depends on the confidence;
             if (Math.random() < theHorse.getConfidence()) {
                 theHorse.moveForward();
+                changeHorseConfidence(theHorse);
             }
 
             // the probability that the horse will fall is very small (max is 0.1)
@@ -205,6 +217,7 @@ public class Race {
             // so if you double the confidence, the probability that it will fall is *2
             if (Math.random() < (0.1 * theHorse.getConfidence() * theHorse.getConfidence())) {
                 theHorse.fall();
+                changeHorseConfidence(theHorse);
             }
         }
     }
@@ -282,7 +295,8 @@ public class Race {
         System.out.print('|');
 
         // print the horse's name and confidence
-        System.out.print(" " + theHorse.getName() + " (Current confidence " + theHorse.getConfidence() + ")");
+        System.out.print(" " + theHorse.getName() + " (Current confidence "
+                + String.format("%.1f", theHorse.getConfidence()) + ")");
     }
 
     /***
@@ -566,22 +580,12 @@ public class Race {
             lane3Horse.goBackToStart();
         }
 
-        // update horse detail label
-        for (int i = 0; i < horseNum; i++) {
-            raceFrame.updateHorseDetails(i);
-        }
-
-        System.out.println("Horse 1 confidence: " + lane1Horse.getConfidence());
-        System.out.println("Horse 2 confidence: " + lane2Horse.getConfidence());
-        System.out.println("Horse 3 confidence: " + lane3Horse.getConfidence());
-
         // Create a Timer that updates the horse positions and repaints the GUI every
         // 100 milliseconds
         timer = new Timer(100, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Update the positions of the horses
-                Horse theHorse = null;
                 if (lane1Horse != null) {
                     moveHorse(lane1Horse);
                 }
@@ -592,6 +596,11 @@ public class Race {
 
                 if (lane3Horse != null) {
                     moveHorse(lane3Horse);
+                }
+
+                // update horse detail label
+                for (int i = 0; i < horseNum; i++) {
+                    raceFrame.updateHorseDetails(i);
                 }
 
                 // Check if any horse has won the race
@@ -614,7 +623,6 @@ public class Race {
             }
         });
         timer.start(); // Start the timer
-
 
         JButton restartButton = new JButton("New Race");
         restartButton.addActionListener(new ActionListener() {

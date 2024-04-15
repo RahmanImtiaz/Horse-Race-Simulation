@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RaceFrame extends JFrame {
     private Color trackColour;
@@ -9,6 +11,8 @@ public class RaceFrame extends JFrame {
     private int horseNum;
     private Horse h1, h2, h3;
     private JLabel horseDetails;
+    private List<JLabel> horseDetailsList = new ArrayList<>();
+
 
     public RaceFrame(Color trackColour, int raceLength, int horseNum, Horse h1, Horse h2, Horse h3) {
         this.trackColour = trackColour;
@@ -59,7 +63,8 @@ public class RaceFrame extends JFrame {
             horseDetails.setText(" " + (i == 0 ? h1.getName() : (i == 1 ? h2.getName() : h3.getName())) + " (Current confidence " + (i == 0 ? h1.getConfidence() : (i == 1 ? h2.getConfidence() : h3.getConfidence())) + ")");            horseDetails.setBounds(((raceLength)*10) + 60, 50, 200, 30); // Adjust the position and size as needed
             horseDetails.setForeground(Color.WHITE);
             horsePanel.add(horseDetails);
-        
+            horseDetailsList.add(horseDetails);
+
             raceDesignPanel.add(horsePanel);
         }
 
@@ -70,6 +75,7 @@ public class RaceFrame extends JFrame {
     }
 
     public void updateHorseDetails(int i) {
+        JLabel horseDetails = horseDetailsList.get(i);
         horseDetails.setText(" " + (i == 0 ? h1.getName() : (i == 1 ? h2.getName() : h3.getName())) + " (Current confidence " + (i == 0 ? h1.getConfidence() : (i == 1 ? h2.getConfidence() : h3.getConfidence())) + ")");
     }
 }
