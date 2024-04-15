@@ -87,6 +87,10 @@ public class Race
         if (lane3Horse != null) {
             lane3Horse.goBackToStart();
         }
+
+        boolean confidenceChanged1 = false;
+        boolean confidenceChanged2 = false;
+        boolean confidenceChanged3 = false;
                       
         while (!finished)
         {
@@ -130,6 +134,17 @@ public class Race
             try{ 
                 TimeUnit.MILLISECONDS.sleep(100);
             }catch(Exception e){}
+        }
+    }
+
+    public void changeHorseConfidence(Horse horse) {
+        
+        if (horse != null) {
+            if (raceWonBy(horse)) {
+                horse.setConfidence(horse.getConfidence() + 0.1);
+            } else if (horse.hasFallen()) {
+                horse.setConfidence(horse.getConfidence() - 0.1);
+            }
         }
     }
 
@@ -207,6 +222,7 @@ public class Race
             if (Math.random() < theHorse.getConfidence())
             {
                theHorse.moveForward();
+               changeHorseConfidence(theHorse);
             }
             
             //the probability that the horse will fall is very small (max is 0.1)
@@ -215,6 +231,7 @@ public class Race
             if (Math.random() < (0.1*theHorse.getConfidence()*theHorse.getConfidence()))
             {
                 theHorse.fall();
+                changeHorseConfidence(theHorse);
             }
         }
     }
@@ -305,7 +322,7 @@ public class Race
         System.out.print('|');
 
         //print the horse's name and confidence
-        System.out.print(" " + theHorse.getName() + " (Current confidence " + theHorse.getConfidence() + ")");
+        System.out.print(" " + theHorse.getName() + " (Current confidence " + String.format("%.1f",theHorse.getConfidence()) + ")");
     }
         
     
