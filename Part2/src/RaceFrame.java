@@ -8,6 +8,7 @@ public class RaceFrame extends JFrame {
     private int raceLength;
     private int horseNum;
     private Horse h1, h2, h3;
+    private JLabel horseDetails;
 
     public RaceFrame(Color trackColour, int raceLength, int horseNum, Horse h1, Horse h2, Horse h3) {
         this.trackColour = trackColour;
@@ -24,6 +25,7 @@ public class RaceFrame extends JFrame {
         raceDesignPanel.setLayout(new BoxLayout(raceDesignPanel, BoxLayout.Y_AXIS));
 
         for (int i = 0; i < horseNum; i++) {
+
             JPanel horsePanel = new JPanel() {
                 @Override
                 protected void paintComponent(Graphics g) {
@@ -31,6 +33,9 @@ public class RaceFrame extends JFrame {
                     setBackground(Color.BLACK);
                     g.setColor(trackColour);
                     g.fillRect(50, 50, ((raceLength)*10), 60);
+
+                    g.setColor(Color.WHITE); // Set the color of the border
+                    g.drawRect(50, 50, ((raceLength)*10), 60);
                 }
             };
             horsePanel.setLayout(null); // Set layout to null
@@ -49,6 +54,11 @@ public class RaceFrame extends JFrame {
                 horseGUI.setBounds(50, 50, horseGUI.getPreferredSize().width, horseGUI.getPreferredSize().height);
                 horsePanel.add(horseGUI);
             }
+
+            horseDetails = new JLabel();
+            horseDetails.setText(" " + (i == 0 ? h1.getName() : (i == 1 ? h2.getName() : h3.getName())) + " (Current confidence " + (i == 0 ? h1.getConfidence() : (i == 1 ? h2.getConfidence() : h3.getConfidence())) + ")");            horseDetails.setBounds(((raceLength)*10) + 60, 50, 200, 30); // Adjust the position and size as needed
+            horseDetails.setForeground(Color.WHITE);
+            horsePanel.add(horseDetails);
         
             raceDesignPanel.add(horsePanel);
         }
@@ -57,5 +67,9 @@ public class RaceFrame extends JFrame {
         this.setVisible(true);
 
         
+    }
+
+    public void updateHorseDetails(int i) {
+        horseDetails.setText(" " + (i == 0 ? h1.getName() : (i == 1 ? h2.getName() : h3.getName())) + " (Current confidence " + (i == 0 ? h1.getConfidence() : (i == 1 ? h2.getConfidence() : h3.getConfidence())) + ")");
     }
 }

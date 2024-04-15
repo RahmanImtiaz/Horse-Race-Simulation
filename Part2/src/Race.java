@@ -23,6 +23,7 @@ public class Race {
     private Horse lane3Horse;
     private JPanel panel;
     private JFrame frame;
+    private Timer timer;
 
     /**
      * Constructor for objects of class Race
@@ -215,7 +216,7 @@ public class Race {
      * @return true if the horse has won, false otherwise.
      */
     private boolean raceWonBy(Horse theHorse) {
-        if (theHorse != null && theHorse.getDistanceTravelled() == (raceLength*10)) {
+        if (theHorse != null && theHorse.getDistanceTravelled() == (raceLength * 10)) {
             return true;
         } else {
             return false;
@@ -552,9 +553,31 @@ public class Race {
         // Create a new RaceFrame
         RaceFrame raceFrame = new RaceFrame(trackColour, raceLength, horseNum, lane1Horse, lane2Horse, lane3Horse);
 
+        // reset all the lanes (all horses not fallen and back to 0).
+        if (lane1Horse != null) {
+            lane1Horse.goBackToStart();
+        }
+
+        if (lane2Horse != null) {
+            lane2Horse.goBackToStart();
+        }
+
+        if (lane3Horse != null) {
+            lane3Horse.goBackToStart();
+        }
+
+        // update horse detail label
+        for (int i = 0; i < horseNum; i++) {
+            raceFrame.updateHorseDetails(i);
+        }
+
+        System.out.println("Horse 1 confidence: " + lane1Horse.getConfidence());
+        System.out.println("Horse 2 confidence: " + lane2Horse.getConfidence());
+        System.out.println("Horse 3 confidence: " + lane3Horse.getConfidence());
+
         // Create a Timer that updates the horse positions and repaints the GUI every
         // 100 milliseconds
-        Timer timer = new Timer(100, new ActionListener() {
+        timer = new Timer(100, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Update the positions of the horses
@@ -562,11 +585,11 @@ public class Race {
                 if (lane1Horse != null) {
                     moveHorse(lane1Horse);
                 }
-    
+
                 if (lane2Horse != null) {
                     moveHorse(lane2Horse);
                 }
-    
+
                 if (lane3Horse != null) {
                     moveHorse(lane3Horse);
                 }
@@ -591,12 +614,22 @@ public class Race {
             }
         });
         timer.start(); // Start the timer
+
+
+        JButton restartButton = new JButton("New Race");
+        restartButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (timer != null) {
+                    timer.stop(); // Stop the timer if it's running
+                    timer = null; // Set the timer reference to null
+                }
+                raceFrame.dispose(); // Close the current
+                startGUI(); // Restart the race when the button is clicked
+            }
+        });
+        raceFrame.add(restartButton, BorderLayout.SOUTH); // Add the button to the bottom of the frame
+
     }
 
-    private void printHorseGUI(Horse theHorse ){
-        System.out.print('\u000C'); // clear the terminal window
-
-        int spacesBefore = theHorse.getDistanceTravelled();
-        int spacesAfter = raceLength - theHorse.getDistanceTravelled();
-    }
 }

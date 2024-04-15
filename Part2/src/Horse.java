@@ -99,9 +99,14 @@ public class Horse
 
     public JLabel getHorseGUI()
     {
+        return this.horseLabel;
+    }
+
+    public  JLabel horseFallenGUI()
+    {
         if (this.fallen == true)
         {
-            return new JLabel("X");
+            this.horseLabel.setText("X");
         }
         return this.horseLabel;
     }

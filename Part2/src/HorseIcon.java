@@ -3,7 +3,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class HorseIcon implements Icon {
-    private final int size = 50; // Increase size for better detail
+    private final int size = 60; // Increase size for better detail
     private final Color color;
     private final Color overlapColor; // Color for the overlapping part
 
