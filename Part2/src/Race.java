@@ -24,6 +24,8 @@ public class Race {
     private JPanel panel;
     private JFrame frame;
     private Timer timer;
+    private JFrame statsFrame;
+    private RaceFrame raceFrame;
 
     /**
      * Constructor for objects of class Race
@@ -229,7 +231,7 @@ public class Race {
      * @return true if the horse has won, false otherwise.
      */
     private boolean raceWonBy(Horse theHorse) {
-        if (theHorse != null && theHorse.getDistanceTravelled() == (raceLength * 10)) {
+        if (theHorse != null && theHorse.getDistanceTravelled() == ((raceLength * 10) - raceFrame.getHorseWidth())) {
             return true;
         } else {
             return false;
@@ -333,29 +335,21 @@ public class Race {
         title.setForeground(Color.white);
 
         // Create buttons
-        JButton button1 = new JButton("Design Track");
-        JButton button2 = new JButton("Customise Horses");
-        JButton button3 = new JButton("Start Race");
-        JButton button4 = new JButton("Exit");
+        JButton button1 = new JButton("Start: Design Track");
+        JButton button2 = new JButton("Exit");
 
         button1.setAlignmentX(Component.CENTER_ALIGNMENT);
         button2.setAlignmentX(Component.CENTER_ALIGNMENT);
-        button3.setAlignmentX(Component.CENTER_ALIGNMENT);
-        button4.setAlignmentX(Component.CENTER_ALIGNMENT);
         button1.setAlignmentY(Component.CENTER_ALIGNMENT);
 
         // Add action listeners to buttons
         button1.addActionListener(e -> designTrack());
-        button2.addActionListener(e -> customiseHorses());
-        button3.addActionListener(e -> startGUI());
-        button4.addActionListener(e -> System.exit(0));
+        button2.addActionListener(e -> System.exit(0));
 
         // Add components to panel
         panel.add(title);
         panel.add(button1);
         panel.add(button2);
-        panel.add(button3);
-        panel.add(button4);
 
         // Add panel to frame
         GridBagConstraints gbc = new GridBagConstraints();
@@ -565,7 +559,7 @@ public class Race {
         frame.dispose();
 
         // Create a new RaceFrame
-        RaceFrame raceFrame = new RaceFrame(trackColour, raceLength, horseNum, lane1Horse, lane2Horse, lane3Horse);
+        raceFrame = new RaceFrame(trackColour, raceLength, horseNum, lane1Horse, lane2Horse, lane3Horse);
 
         // reset all the lanes (all horses not fallen and back to 0).
         if (lane1Horse != null) {
@@ -579,6 +573,8 @@ public class Race {
         if (lane3Horse != null) {
             lane3Horse.goBackToStart();
         }
+
+        long startTime = System.currentTimeMillis();
 
         // Create a Timer that updates the horse positions and repaints the GUI every
         // 100 milliseconds
@@ -609,12 +605,61 @@ public class Race {
                     // Display a message that the race is over
                     JOptionPane.showMessageDialog(raceFrame, "The race is over!");
                     // Display the winner
+                    long endTime = System.currentTimeMillis();
+                    double finishingTime = (endTime - startTime) / 1000.0; // convert to seconds
                     if (raceWonBy(lane1Horse)) {
                         JOptionPane.showMessageDialog(raceFrame, "And the winner is " + lane1Horse.getName() + " ");
+                        lane1Horse.updatePerformanceMetrics(finishingTime, 1);
+                        if (lane2Horse != null)
+                            lane2Horse.updatePerformanceMetricsLoss(finishingTime);
+                        if (lane3Horse != null)
+                            lane3Horse.updatePerformanceMetricsLoss(finishingTime);
                     } else if (raceWonBy(lane2Horse)) {
                         JOptionPane.showMessageDialog(raceFrame, "And the winner is " + lane2Horse.getName() + " ");
+                        lane2Horse.updatePerformanceMetrics(finishingTime, 1);
+                        if (lane1Horse != null)
+                            lane1Horse.updatePerformanceMetricsLoss(finishingTime);
+                        if (lane3Horse != null)
+                            lane3Horse.updatePerformanceMetricsLoss(finishingTime);
                     } else {
                         JOptionPane.showMessageDialog(raceFrame, "And the winner is " + lane3Horse.getName() + " ");
+                        lane3Horse.updatePerformanceMetrics(finishingTime, 1);
+                        if (lane1Horse != null)
+                            lane1Horse.updatePerformanceMetricsLoss(finishingTime);
+                        if (lane2Horse != null)
+                            lane2Horse.updatePerformanceMetricsLoss(finishingTime);
+                    }
+
+                    // Finalise performance metrics and print them
+                    for (Horse horse : new Horse[] { lane1Horse, lane2Horse, lane3Horse }) {
+                        if (horse != null) {
+                            horse.finalisePerformanceMetrics();
+                            horse.printPerformanceMetrics();
+                        }
+                    }
+                } else if ((lane1Horse == null || lane1Horse.hasFallen()) &&
+                        (lane2Horse == null || lane2Horse.hasFallen()) &&
+                        (lane3Horse == null || lane3Horse.hasFallen())) {
+                    ((Timer) e.getSource()).stop(); // Stop the timer
+                    JOptionPane.showMessageDialog(raceFrame, "All horses have fallen!");
+
+                    long endTime = System.currentTimeMillis();
+                    double finishingTime = (endTime - startTime) / 1000.0; // convert to seconds
+
+                    // Update performance metrics for all horses
+                    if (lane1Horse != null)
+                        lane1Horse.updatePerformanceMetricsLoss(finishingTime);
+                    if (lane2Horse != null)
+                        lane2Horse.updatePerformanceMetricsLoss(finishingTime);
+                    if (lane3Horse != null)
+                        lane3Horse.updatePerformanceMetricsLoss(finishingTime);
+
+                    // Finalise performance metrics and print them
+                    for (Horse horse : new Horse[] { lane1Horse, lane2Horse, lane3Horse }) {
+                        if (horse != null) {
+                            horse.finalisePerformanceMetrics();
+                            horse.printPerformanceMetrics();
+                        }
                     }
                 }
 
@@ -633,11 +678,54 @@ public class Race {
                     timer = null; // Set the timer reference to null
                 }
                 raceFrame.dispose(); // Close the current
+                if (statsFrame != null) {
+                    statsFrame.dispose(); // Close the stats frame
+                }
                 startGUI(); // Restart the race when the button is clicked
             }
         });
-        raceFrame.add(restartButton, BorderLayout.SOUTH); // Add the button to the bottom of the frame
+        
+        JButton statsButton = new JButton("Show Stats");
+        statsButton.addActionListener(e -> showStats(lane1Horse, lane2Horse, lane3Horse));
+
+        JMenuBar menuBar = new JMenuBar();
+        JMenu menu = new JMenu("Options");
+        menuBar.add(menu);
+        menuBar.add(restartButton);
+        menuBar.add(statsButton);
+        
+        raceFrame.add(menuBar, BorderLayout.NORTH);
 
     }
 
+    private void showStats(Horse lane1Horse, Horse lane2Horse, Horse lane3Horse) {
+
+        statsFrame = new JFrame("Horse Stats");
+        statsFrame.setSize(500, 500);
+        statsFrame.setLayout(new BorderLayout());
+
+        JPanel statspanel = new JPanel();
+        statspanel.setLayout(new BoxLayout(statspanel, BoxLayout.Y_AXIS));
+        statsFrame.add(statspanel, BorderLayout.CENTER);
+
+        JLabel title = new JLabel("Horse Stats");
+        title.setFont(new Font("Arial", Font.BOLD, 24));
+        title.setAlignmentX(Component.CENTER_ALIGNMENT);
+        statspanel.add(title);
+
+        for (Horse horse : new Horse[] { lane1Horse, lane2Horse, lane3Horse }) {
+            if (horse != null) {
+                JLabel[] labels = horse.returnPerformanceMetricsLabels();
+                for (JLabel label : labels) {
+                    label.setAlignmentX(Component.CENTER_ALIGNMENT);
+                    statspanel.add(label);
+                }
+                statspanel.add(Box.createRigidArea(new Dimension(0, 10)));
+            }
+        }
+
+        statsFrame.add(statspanel);
+        statsFrame.setVisible(true);
+
+    }
 }
