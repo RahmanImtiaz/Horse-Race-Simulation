@@ -1,9 +1,9 @@
 
 /**
- * Write a description of class Horse here.
+ * A horse with a name, a symbol, a distance travelled, a fallen status, and a confidence level.
  * 
- * @author (your name) 
- * @version (a version number or a date)
+ * @author Rahman Imtiaz
+ * @version 1.0
  */
 public class Horse
 {

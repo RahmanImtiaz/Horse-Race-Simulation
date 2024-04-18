@@ -9,7 +9,7 @@ import java.awt.*;
  * A three-horse race, each horse running in its own lane
  * for a given distance
  * 
- * @author McFarewell
+ * @author Rahman Imtiaz
  * @version 1.0
  */
 public class Race
