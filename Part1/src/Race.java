@@ -87,10 +87,6 @@ public class Race
         if (lane3Horse != null) {
             lane3Horse.goBackToStart();
         }
-
-        boolean confidenceChanged1 = false;
-        boolean confidenceChanged2 = false;
-        boolean confidenceChanged3 = false;
                       
         while (!finished)
         {
