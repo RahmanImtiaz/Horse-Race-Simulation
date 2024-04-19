@@ -5,6 +5,16 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A frame that displays the gui race of 1 to 3 horses. The frame contains a
+ * panel for each track and a horse on it.
+ * The frame also contains a text area for each horse, displaying the horse's
+ * name and confidence level.
+ * 
+ * @author Rahman Imtiaz
+ * @version 1.0
+ */
+
 public class RaceFrame extends JFrame {
     private Color trackColour;
     private int raceLength;
@@ -13,6 +23,7 @@ public class RaceFrame extends JFrame {
     private JTextArea horseDetails;
     private List<JTextArea> horseDetailsList = new ArrayList<>();
     private int horseWidth;
+    private User user = new User(1000);
 
     public RaceFrame(Color trackColour, int raceLength, int horseNum, Horse h1, Horse h2, Horse h3) {
         this.trackColour = trackColour;
@@ -39,7 +50,7 @@ public class RaceFrame extends JFrame {
                     g.fillRect(50, 50, ((raceLength) * 10), 60);
 
                     g.setColor(Color.WHITE); // Set the color of the border
-                    g.drawRect(50, 50, ((raceLength) * 10 ), 60);
+                    g.drawRect(50, 50, ((raceLength) * 10), 60);
                 }
             };
             horsePanel.setLayout(null); // Set layout to null
@@ -75,8 +86,10 @@ public class RaceFrame extends JFrame {
         }
 
         this.add(raceDesignPanel);
-        this.setVisible(true);
 
+        setBettingPanel();
+
+        this.setVisible(true);
     }
 
     public void updateHorseDetails(int i) {
@@ -88,5 +101,111 @@ public class RaceFrame extends JFrame {
 
     public int getHorseWidth() {
         return horseWidth;
+    }
+
+    public void setBettingPanel() {
+
+        JPanel bettingPanel = new JPanel();
+        bettingPanel.setLayout(new BoxLayout(bettingPanel, BoxLayout.Y_AXIS));
+
+        bettingPanel.setBackground(Color.DARK_GRAY);
+        bettingPanel.setPreferredSize(new Dimension(400, bettingPanel.getHeight()));
+
+        JLabel bettingLabel = new JLabel("Place your bets here!");
+        bettingLabel.setForeground(Color.WHITE);
+        bettingPanel.add(bettingLabel);
+
+        List<String> horseNamesList = new ArrayList<>();
+        if (h1 != null) {
+            horseNamesList.add("Horse 1: " + h1.getName());
+        }
+        if (h2 != null) {
+            horseNamesList.add("Horse 2: " + h2.getName());
+        }
+        if (h3 != null) {
+            horseNamesList.add("Horse 3: " + h3.getName());
+        }
+        String[] horseNames = horseNamesList.toArray(new String[0]);
+        JComboBox<String> comboBox = new JComboBox<>(horseNames);
+        bettingPanel.add(comboBox);
+
+        JLabel oddsLabel = new JLabel("");
+        oddsLabel.setForeground(Color.WHITE);
+        bettingPanel.add(oddsLabel);
+
+        // Add an ActionListener to the JComboBox
+        comboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Get the selected item
+                int selectedHorseIndex = comboBox.getSelectedIndex();
+
+                // Find the Horse object based on the selected index
+
+                double odds = 0;
+                if (selectedHorseIndex == 0) {
+                    // Calculate the odds of the selected horse
+                    odds = h1.calculateOdds();
+
+                } else if (selectedHorseIndex == 1) {
+                    // Calculate the odds of the selected horse
+                    odds = h2.calculateOdds();
+
+                } else if (selectedHorseIndex == 2) {
+                    // Calculate the odds of the selected horse
+                    odds = h3.calculateOdds();
+
+                }
+                // Display the odds (for example, in a JLabel)
+                oddsLabel.setText("Odds: " + odds);
+                oddsLabel.setForeground(Color.WHITE);
+
+                // Refresh the panel
+                bettingPanel.revalidate();
+                bettingPanel.repaint();
+
+            }
+        });
+
+        JLabel betAmountLabel = new JLabel("Bet Amount:");
+        betAmountLabel.setForeground(Color.WHITE);
+        JTextField betAmountField = new JTextField(10);
+        betAmountField.setMaximumSize(new Dimension(100, 30));
+        betAmountField.setAlignmentX(Component.CENTER_ALIGNMENT);
+        bettingPanel.add(betAmountField);
+        bettingPanel.add(betAmountLabel);
+
+        JLabel balanceLabel = new JLabel("Balance: " + user.getBalance());
+        balanceLabel.setForeground(Color.WHITE);
+        bettingPanel.add(balanceLabel);
+
+        JButton placeBet = new JButton("Place Bet");
+
+        // When the "Place Bet" button is clicked, get the bet amount
+        placeBet.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Get the text from the JTextField
+                String betAmountText = betAmountField.getText();
+
+                // Parse the text as an integer
+                try {
+                    int betAmount = Integer.parseInt(betAmountText);
+
+                    if (betAmount <= user.getBalance()) {
+                        user.setBetAmount(betAmount);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "You do not have enough balance to place this bet.");
+                    }
+
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "Please enter a valid number for the bet amount.");
+                }
+            }
+        });
+
+        bettingPanel.add(placeBet);
+
+        this.add(bettingPanel, BorderLayout.EAST);
     }
 }

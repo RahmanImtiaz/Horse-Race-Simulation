@@ -11,9 +11,10 @@ import java.awt.event.ActionListener;
  * A three-horse race, each horse running in its own lane
  * for a given distance
  * 
- * @author McFarewell
+ * @author Rahman Imtiaz
  * @version 1.0
  */
+
 public class Race {
     private int raceLength;
     private Color trackColour;
@@ -461,24 +462,36 @@ public class Race {
             button.setPreferredSize(new Dimension(300, 20));
             button.setAlignmentX(Component.CENTER_ALIGNMENT);
             final int finalI = i; // Create a final copy of i
+
+            // Default horse colour is black
+            JLabel horseLabel = new JLabel(new HorseIcon(trackColour, Color.white));
+            if (finalI == 1) { // Use finalI instead of i
+                lane1Horse.setHorseGUI(horseLabel);
+            } else if (finalI == 2) { // Use finalI instead of i
+                lane2Horse.setHorseGUI(horseLabel);
+            } else {
+                lane3Horse.setHorseGUI(horseLabel);
+            }
+
             button.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     Color initialBackground = button.getBackground();
                     Color color = JColorChooser.showDialog(null, "JColorChooser Sample", initialBackground);
-                    if (color != null) {
-                        button.setBackground(color);
 
-                        JLabel horseLabel = new JLabel(new HorseIcon(trackColour, color));
-                        if (finalI == 1) { // Use finalI instead of i
-                            lane1Horse.setHorseGUI(horseLabel);
-                        } else if (finalI == 2) { // Use finalI instead of i
-                            lane2Horse.setHorseGUI(horseLabel);
-                        } else {
-                            lane3Horse.setHorseGUI(horseLabel);
-                        }
+                    button.setBackground(color);
+
+                    JLabel horseLabel = new JLabel(new HorseIcon(trackColour, color));
+                    if (finalI == 1) { // Use finalI instead of i
+                        lane1Horse.setHorseGUI(horseLabel);
+                    } else if (finalI == 2) { // Use finalI instead of i
+                        lane2Horse.setHorseGUI(horseLabel);
+                    } else {
+                        lane3Horse.setHorseGUI(horseLabel);
                     }
+
                 }
             });
+
             horseDesignPanel.add(button);
 
             JLabel label = new JLabel("Enter the name of horse " + i + ":");
@@ -667,7 +680,19 @@ public class Race {
                 raceFrame.repaint();
             }
         });
-        timer.start(); // Start the timer
+
+        JButton startButton = new JButton("Start Race");
+        startButton.setEnabled(true);
+        startButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (timer != null) {
+                    timer.start(); // Start the timer
+                    startButton.setEnabled(false); // Disable the start button
+                }
+            }
+        });
+
 
         JButton restartButton = new JButton("New Race");
         restartButton.addActionListener(new ActionListener() {
@@ -684,16 +709,17 @@ public class Race {
                 startGUI(); // Restart the race when the button is clicked
             }
         });
-        
+
         JButton statsButton = new JButton("Show Stats");
         statsButton.addActionListener(e -> showStats(lane1Horse, lane2Horse, lane3Horse));
 
         JMenuBar menuBar = new JMenuBar();
         JMenu menu = new JMenu("Options");
         menuBar.add(menu);
+        menuBar.add(startButton);
         menuBar.add(restartButton);
         menuBar.add(statsButton);
-        
+
         raceFrame.add(menuBar, BorderLayout.NORTH);
 
     }

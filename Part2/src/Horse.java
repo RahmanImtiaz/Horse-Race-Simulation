@@ -1,15 +1,15 @@
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.JLabel;
 
 /**
- * Write a description of class Horse here.
+ * A horse with a name, a symbol, a distance travelled, a fallen status, and a confidence level.
  * 
- * @author (your name) 
- * @version (a version number or a date)
+ * @author Rahman Imtiaz
+ * @version 1.0
  */
+
 public class Horse
 {
     //Fields of class Horse
@@ -183,4 +183,22 @@ public class Horse
         return labels;
     }
     
+    public double calculateOdds() {
+        double speedFactor = 1 / this.avgSpeed; // Lower speed means higher odds
+        double winRatioFactor = 1 - ((double) this.totalWins / this.totalRaces); // Higher win ratio means lower odds
+    
+        // Calculate weighted average speed for recent performance
+        double recentSpeedFactor = 0;
+        int recentRaces = 5; // Number of recent races to consider
+        int count = 0;
+        for (int i = this.speeds.size() - 1; i >= 0 && count < recentRaces; i--, count++) {
+            recentSpeedFactor += this.speeds.get(i);
+        }
+        recentSpeedFactor = count > 0 ? 1 / (recentSpeedFactor / count) : 1; // Lower speed means higher odds
+    
+        // Calculate final odds
+        double odds = (speedFactor + winRatioFactor + recentSpeedFactor) / 3;
+    
+        return odds;
+    }
 }
