@@ -67,10 +67,25 @@ public class Race
      * then repeatedly moved forward until the 
      * race is finished
      */
+
     public void startRace()
     {
+
         //create and add the horses
         createAndAddHorses();
+    
+        String option = "";
+        do {
+
+            //start game loop
+            startRaceGameLoop();
+            option = enterOption("y", "n", "Would you like to start a new Race? (y/n)");
+            
+        } while (!option.equals("n"));
+    }
+
+    public void startRaceGameLoop()
+    {
 
         //declare a local variable to tell us when the race is finished
         boolean finished = false;
@@ -174,7 +189,7 @@ public class Race
         String option = "";
         do {
             System.out.println(msg);
-            option = sc.next();
+            option = sc.nextLine();
         } while (!option.equals(opt1) && !option.equals(opt2));
         return option;
     }
