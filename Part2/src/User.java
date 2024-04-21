@@ -2,7 +2,7 @@ public class User {
 
     private int balance;
     private int betAmount;
-    private int horseSelected;
+    private int horseSelected; //0, 1, 2
 
     public User(int balance) {
         this.balance = balance;

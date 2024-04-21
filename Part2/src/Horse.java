@@ -142,6 +142,7 @@ public class Horse
         this.speeds.add(this.distanceTravelled/finishingTime);
         this.totalRaces++;
         this.totalWins = this.totalWins + winsIncrease;
+        finishingTime = Math.round(finishingTime * 100.0) / 100.0;
         this.finishingTimes.add(finishingTime);
     }
 
@@ -174,16 +175,16 @@ public class Horse
     {
         JLabel[] labels = new JLabel[6];
         labels[0] = new JLabel("Horse: " + this.name);
-        labels[1] = new JLabel("Avg Speed: " + this.avgSpeed);
+        labels[1] = new JLabel("Avg Speed: " + String.format("%.2f", this.avgSpeed));
         labels[2] = new JLabel("Total races: " + this.totalRaces);
         labels[3] = new JLabel("Total wins: " + this.totalWins);
-        labels[4] = new JLabel("Win ratio: " + ((double)this.totalWins/this.totalRaces)*100 + "%");
+        labels[4] = new JLabel("Win ratio: " + String.format("%.2f", ((double)this.totalWins/this.totalRaces)*100) + "%");
         labels[5] = new JLabel("Finishing times: " + this.finishingTimes);
 
         return labels;
     }
     
-    public double calculateOdds() {
+    public double calculateOdds(double trackLength) {
         double speedFactor = 1 / this.avgSpeed; // Lower speed means higher odds
         double winRatioFactor = 1 - ((double) this.totalWins / this.totalRaces); // Higher win ratio means lower odds
     
@@ -196,8 +197,14 @@ public class Horse
         }
         recentSpeedFactor = count > 0 ? 1 / (recentSpeedFactor / count) : 1; // Lower speed means higher odds
     
+        // Incorporate confidence into the odds (lower confidence means higher odds)
+        double confidenceFactor = 1 - this.confidence;
+    
+        // Incorporate track length into the odds (longer track means higher odds)
+        double trackLengthFactor = trackLength / 1000; // Assuming track length is in meters
+    
         // Calculate final odds
-        double odds = (speedFactor + winRatioFactor + recentSpeedFactor) / 3;
+        double odds = (speedFactor + winRatioFactor + recentSpeedFactor + confidenceFactor + trackLengthFactor) / 5;
     
         return odds;
     }

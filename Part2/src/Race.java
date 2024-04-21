@@ -27,6 +27,7 @@ public class Race {
     private Timer timer;
     private JFrame statsFrame;
     private RaceFrame raceFrame;
+    private User user;
 
     /**
      * Constructor for objects of class Race
@@ -40,6 +41,7 @@ public class Race {
         lane1Horse = null;
         lane2Horse = null;
         lane3Horse = null;
+        user = new User(1000);
     }
 
     /**
@@ -572,7 +574,39 @@ public class Race {
         frame.dispose();
 
         // Create a new RaceFrame
-        raceFrame = new RaceFrame(trackColour, raceLength, horseNum, lane1Horse, lane2Horse, lane3Horse);
+        raceFrame = new RaceFrame(trackColour, raceLength, horseNum, lane1Horse, lane2Horse, lane3Horse, user);
+
+        JButton startButton = new JButton("Start Race");
+        startButton.setEnabled(true);
+        startButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (timer != null) {
+                    timer.start(); // Start the timer
+                    startButton.setEnabled(false); // Disable the start button
+                }
+            }
+        });
+
+        JButton restartButton = new JButton("New Race");
+        restartButton.setEnabled(false);
+        restartButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (timer != null) {
+                    timer.stop(); // Stop the timer if it's running
+                    timer = null; // Set the timer reference to null
+                }
+                raceFrame.dispose(); // Close the current
+                if (statsFrame != null) {
+                    statsFrame.dispose(); // Close the stats frame
+                }
+                startGUI(); // Restart the race when the button is clicked
+            }
+        });
+
+        JButton statsButton = new JButton("Show Stats");
+        statsButton.addActionListener(e -> showStats(lane1Horse, lane2Horse, lane3Horse));
 
         // reset all the lanes (all horses not fallen and back to 0).
         if (lane1Horse != null) {
@@ -586,6 +620,7 @@ public class Race {
         if (lane3Horse != null) {
             lane3Horse.goBackToStart();
         }
+        
 
         long startTime = System.currentTimeMillis();
 
@@ -627,6 +662,16 @@ public class Race {
                             lane2Horse.updatePerformanceMetricsLoss(finishingTime);
                         if (lane3Horse != null)
                             lane3Horse.updatePerformanceMetricsLoss(finishingTime);
+
+                        if (user.getHorseSelected() == 0) {
+                            user.updateBalance(user.getBetAmount());
+                            user.setBetAmount(0);
+                            user.setHorseSelected(-1);
+                        } else {
+                            user.updateBalance(-user.getBetAmount());
+                            user.setBetAmount(0);
+                            user.setHorseSelected(-1);
+                        }
                     } else if (raceWonBy(lane2Horse)) {
                         JOptionPane.showMessageDialog(raceFrame, "And the winner is " + lane2Horse.getName() + " ");
                         lane2Horse.updatePerformanceMetrics(finishingTime, 1);
@@ -634,6 +679,16 @@ public class Race {
                             lane1Horse.updatePerformanceMetricsLoss(finishingTime);
                         if (lane3Horse != null)
                             lane3Horse.updatePerformanceMetricsLoss(finishingTime);
+
+                        if (user.getHorseSelected() == 1) {
+                            user.updateBalance(user.getBetAmount());
+                            user.setBetAmount(0);
+                            user.setHorseSelected(-1);
+                        } else {
+                            user.updateBalance(-user.getBetAmount());
+                            user.setBetAmount(0);
+                            user.setHorseSelected(-1);
+                        }
                     } else {
                         JOptionPane.showMessageDialog(raceFrame, "And the winner is " + lane3Horse.getName() + " ");
                         lane3Horse.updatePerformanceMetrics(finishingTime, 1);
@@ -641,6 +696,16 @@ public class Race {
                             lane1Horse.updatePerformanceMetricsLoss(finishingTime);
                         if (lane2Horse != null)
                             lane2Horse.updatePerformanceMetricsLoss(finishingTime);
+
+                        if (user.getHorseSelected() == 2) {
+                            user.updateBalance(user.getBetAmount());
+                            user.setBetAmount(0);
+                            user.setHorseSelected(-1);
+                        } else {
+                            user.updateBalance(-user.getBetAmount());
+                            user.setBetAmount(0);
+                            user.setHorseSelected(-1);
+                        }
                     }
 
                     // Finalise performance metrics and print them
@@ -650,11 +715,16 @@ public class Race {
                             horse.printPerformanceMetrics();
                         }
                     }
+
+                    restartButton.setEnabled(true);
+
                 } else if ((lane1Horse == null || lane1Horse.hasFallen()) &&
                         (lane2Horse == null || lane2Horse.hasFallen()) &&
                         (lane3Horse == null || lane3Horse.hasFallen())) {
                     ((Timer) e.getSource()).stop(); // Stop the timer
                     JOptionPane.showMessageDialog(raceFrame, "All horses have fallen!");
+
+                    user.updateBalance(-user.getBetAmount());
 
                     long endTime = System.currentTimeMillis();
                     double finishingTime = (endTime - startTime) / 1000.0; // convert to seconds
@@ -674,44 +744,17 @@ public class Race {
                             horse.printPerformanceMetrics();
                         }
                     }
+
+                    restartButton.setEnabled(true);
                 }
 
                 // Repaint the GUI to reflect the new positions of the horses
                 raceFrame.repaint();
+
+                // update bets label
+                raceFrame.updateStatDetails(user);
             }
         });
-
-        JButton startButton = new JButton("Start Race");
-        startButton.setEnabled(true);
-        startButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (timer != null) {
-                    timer.start(); // Start the timer
-                    startButton.setEnabled(false); // Disable the start button
-                }
-            }
-        });
-
-
-        JButton restartButton = new JButton("New Race");
-        restartButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (timer != null) {
-                    timer.stop(); // Stop the timer if it's running
-                    timer = null; // Set the timer reference to null
-                }
-                raceFrame.dispose(); // Close the current
-                if (statsFrame != null) {
-                    statsFrame.dispose(); // Close the stats frame
-                }
-                startGUI(); // Restart the race when the button is clicked
-            }
-        });
-
-        JButton statsButton = new JButton("Show Stats");
-        statsButton.addActionListener(e -> showStats(lane1Horse, lane2Horse, lane3Horse));
 
         JMenuBar menuBar = new JMenuBar();
         JMenu menu = new JMenu("Options");
