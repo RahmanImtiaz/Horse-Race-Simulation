@@ -87,9 +87,6 @@ public class Race {
  
      public void startRaceGameLoop()
      {
-        // create and add the horses
-        createAndAddHorses();
-
         // declare a local variable to tell us when the race is finished
         boolean finished = false;
 
@@ -607,6 +604,7 @@ public class Race {
                 if (timer != null) {
                     timer.start(); // Start the timer
                     startButton.setEnabled(false); // Disable the start button
+                    raceFrame.disableBetBtn();
                 }
             }
         });
@@ -630,6 +628,8 @@ public class Race {
 
         JButton statsButton = new JButton("Show Stats");
         statsButton.addActionListener(e -> showStats(lane1Horse, lane2Horse, lane3Horse));
+
+       raceFrame.enableBetBtn();
 
         // reset all the lanes (all horses not fallen and back to 0).
         if (lane1Horse != null) {

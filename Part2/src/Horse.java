@@ -192,25 +192,24 @@ public class Horse
     }
     
     public double calculateOdds(double trackLength) {
-        double speedFactor = 1 / this.avgSpeed; // Lower speed means higher odds
-        double winRatioFactor = 1 - ((double) this.totalWins / this.totalRaces); // Higher win ratio means lower odds
+        double speedFactor = this.avgSpeed != 0 ? 1 / this.avgSpeed : 0;
     
-        // Calculate weighted average speed for recent performance
+        double winRatioFactor = this.totalRaces != 0 ? 1 - ((double) this.totalWins / this.totalRaces) : 1;
+    
         double recentSpeedFactor = 0;
-        int recentRaces = 5; // Number of recent races to consider
+        int recentRaces = 5;
         int count = 0;
         for (int i = this.speeds.size() - 1; i >= 0 && count < recentRaces; i--, count++) {
-            recentSpeedFactor += this.speeds.get(i);
+            if (!Double.isNaN(this.speeds.get(i))) {
+                recentSpeedFactor += this.speeds.get(i);
+            }
         }
-        recentSpeedFactor = count > 0 ? 1 / (recentSpeedFactor / count) : 1; // Lower speed means higher odds
+        recentSpeedFactor = count > 0 ? 1 / (recentSpeedFactor / count) : 0;
     
-        // Incorporate confidence into the odds (lower confidence means higher odds)
         double confidenceFactor = 1 - this.confidence;
     
-        // Incorporate track length into the odds (longer track means higher odds)
-        double trackLengthFactor = trackLength / 1000; // Assuming track length is in meters
+        double trackLengthFactor = trackLength / 1000;
     
-        // Calculate final odds
         double odds = (speedFactor + winRatioFactor + recentSpeedFactor + confidenceFactor + trackLengthFactor) / 5;
     
         return odds;

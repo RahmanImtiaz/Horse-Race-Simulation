@@ -25,6 +25,7 @@ public class RaceFrame extends JFrame {
     private int horseWidth;
     private List<JLabel> betsLabelList;
     private int selectedHorseIndex; // bet on horse 0, 1, 2
+    private JButton placeBetBtn;
 
     public RaceFrame(Color trackColour, int raceLength, int horseNum, Horse h1, Horse h2, Horse h3, User user) {
         this.trackColour = trackColour;
@@ -199,9 +200,9 @@ public class RaceFrame extends JFrame {
 
         betsLabelList.add(balanceLabel);
 
-        JButton placeBet = new JButton("Place Bet");
+        placeBetBtn = new JButton("Place Bet");
 
-        placeBet.addActionListener(new ActionListener() {
+        placeBetBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Get the text from the JTextField
@@ -217,6 +218,7 @@ public class RaceFrame extends JFrame {
 
                         betAmountField.setText("");
                         betAmountLabel.setText("Bet Amount: " + user.getBetAmount());
+                        placeBetBtn.setEnabled(false);
                     } else {
                         JOptionPane.showMessageDialog(null, "You do not have enough balance to place this bet.");
                     }
@@ -227,7 +229,7 @@ public class RaceFrame extends JFrame {
             }
         });
 
-        bettingPanel.add(createCenteredBox(placeBet));
+        bettingPanel.add(createCenteredBox(placeBetBtn));
 
         this.add(bettingPanel, BorderLayout.EAST);
     }
@@ -264,5 +266,13 @@ public class RaceFrame extends JFrame {
 
         // update the balance label
         betsLabelList.get(2).setText("Balance: £" + user.getBalance());
+    }
+
+    public void enableBetBtn() {
+        placeBetBtn.setEnabled(true);
+    }
+
+    public void disableBetBtn() {
+        placeBetBtn.setEnabled(false);
     }
 }
