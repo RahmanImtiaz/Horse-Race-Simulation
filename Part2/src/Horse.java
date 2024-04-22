@@ -105,6 +105,13 @@ public class Horse
     public void setConfidence(double newConfidence)
     {
         DecimalFormat df = new DecimalFormat("#.0");
+
+        if (newConfidence > 1.0) {
+            newConfidence = 1.0;
+        } else if (newConfidence < 0.0) {
+            newConfidence = 0.0;
+        }
+
         this.confidence = Double.valueOf(df.format(newConfidence));
     }
     

@@ -62,13 +62,31 @@ public class Race {
         }
     }
 
-    /**
+/**
      * Start the race
      * The horse are brought to the start and
-     * then repeatedly moved forward until the
+     * then repeatedly moved forward until the 
      * race is finished
      */
-    public void startRace() {
+
+     public void startRace()
+     {
+ 
+         //create and add the horses
+         createAndAddHorses();
+     
+         String option = "";
+         do {
+ 
+             //start game loop
+             startRaceGameLoop();
+             option = enterOption("y", "n", "Would you like to start a new Race? (y/n)");
+             
+         } while (!option.equals("n"));
+     }
+ 
+     public void startRaceGameLoop()
+     {
         // create and add the horses
         createAndAddHorses();
 
@@ -173,7 +191,7 @@ public class Race {
         String option = "";
         do {
             System.out.println(msg);
-            option = sc.next();
+            option = sc.nextLine();
         } while (!option.equals(opt1) && !option.equals(opt2));
         return option;
     }
@@ -223,6 +241,11 @@ public class Race {
             if (Math.random() < (0.1 * theHorse.getConfidence() * theHorse.getConfidence())) {
                 theHorse.fall();
                 changeHorseConfidence(theHorse);
+            } 
+            
+            // if the horse has not moved forward at all, then it has fallen
+            if (theHorse.getConfidence() == 0) {
+                theHorse.fall();
             }
         }
     }

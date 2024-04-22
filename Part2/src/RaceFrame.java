@@ -23,7 +23,7 @@ public class RaceFrame extends JFrame {
     private JTextArea horseDetails;
     private List<JTextArea> horseDetailsList = new ArrayList<>();
     private int horseWidth;
-    private List<JLabel> betsLabelList = new ArrayList<>();
+    private List<JLabel> betsLabelList;
     private int selectedHorseIndex; // bet on horse 0, 1, 2
 
     public RaceFrame(Color trackColour, int raceLength, int horseNum, Horse h1, Horse h2, Horse h3, User user) {
@@ -107,6 +107,7 @@ public class RaceFrame extends JFrame {
 
     public void setBettingPanel(User user) {
 
+        betsLabelList = new ArrayList<>();
         user.setBetAmount(0);
         user.setHorseSelected(-1);
 
