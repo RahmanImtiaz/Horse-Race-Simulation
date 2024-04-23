@@ -1,5 +1,6 @@
 import java.util.concurrent.TimeUnit;
 import java.lang.Math;
+import java.lang.reflect.Array;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import javax.swing.*;
@@ -22,12 +23,17 @@ public class Race {
     private Color trackColour;
     private int horseNum;
     private List<Horse> horses;
+    private int laneAmount;
     private JPanel panel;
+    private JPanel horseDesignPanel;
     private JFrame frame;
     private Timer timer;
     private JFrame statsFrame;
     private RaceFrame raceFrame;
     private User user;
+    private int currentHorseCount = 1;
+    private ArrayList<JTextField> nameTextFields;
+    private ArrayList<JTextField> confidenceTextFields;
 
     /**
      * Constructor for objects of class Race
@@ -52,30 +58,29 @@ public class Race {
         horses.add(theHorse);
     }
 
-/**
+    /**
      * Start the race
      * The horse are brought to the start and
-     * then repeatedly moved forward until the 
+     * then repeatedly moved forward until the
      * race is finished
      */
 
-     public void startRace()
-     {
- 
-         //create and add the horses
-         createAndAddHorses();
-     
-         String option = "";
-         do {
- 
-             //start game loop
-             startRaceGameLoop();
-             option = enterOption("y", "n", "Would you like to start a new Race? (y/n)");
-             
-         } while (!option.equals("n"));
-     }
- 
-     public void startRaceGameLoop() {
+    public void startRace() {
+
+        // create and add the horses
+        createAndAddHorses();
+        laneAmount = enterLaneAmount(horses.size(), 12, "Enter the amount of lanes (" + horses.size() + "-12)");
+        String option = "";
+        do {
+
+            // start game loop
+            startRaceGameLoop();
+            option = enterOption("y", "n", "Would you like to start a new Race? (y/n)");
+
+        } while (!option.equals("n"));
+    }
+
+    public void startRaceGameLoop() {
 
         // declare a local variable to tell us when the race is finished
         boolean finished = false;
@@ -197,6 +202,27 @@ public class Race {
         return confidence;
     }
 
+    private int enterLaneAmount(int min, int max, String msg) {
+        Scanner sc = new Scanner(System.in);
+        int amount = 2; // default 2 lanes
+        boolean validInput = false;
+        do {
+            try {
+                System.out.println(msg);
+                amount = sc.nextInt();
+                if (amount >= min && amount <= max) {
+                    validInput = true;
+                } else {
+                    System.out.println("Please enter a number between " + min + " and " + max + ".");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("That's not a valid number!");
+                sc.next(); // consume the invalid token
+            }
+        } while (!validInput);
+        return amount;
+    }
+
     /**
      * Randomly make a horse move forward or fall depending
      * on its confidence rating
@@ -221,8 +247,8 @@ public class Race {
             if (Math.random() < (0.1 * theHorse.getConfidence() * theHorse.getConfidence())) {
                 theHorse.fall();
                 changeHorseConfidence(theHorse);
-            } 
-            
+            }
+
             // if the horse has not moved forward at all, then it has fallen
             if (theHorse.getConfidence() == 0) {
                 theHorse.fall();
@@ -253,12 +279,16 @@ public class Race {
         multiplePrint('=', raceLength + 3); // top edge of track
         System.out.println();
 
-        for (Horse horse : horses) { 
+        for (Horse horse : horses) {
             if (horse != null) {
                 printLane(horse);
                 System.out.println();
             }
         }
+        for (int i = 0; i < laneAmount - horses.size(); i++) {
+            printEmptyLane();
+        }
+
         multiplePrint('=', raceLength + 3); // bottom edge of track
         System.out.println();
     }
@@ -300,6 +330,20 @@ public class Race {
                 + String.format("%.1f", theHorse.getConfidence()) + ")");
     }
 
+    private void printEmptyLane() {
+        // print a | for the beginning of the lane
+        System.out.print('|');
+
+        // print the spaces for the entire lane
+        multiplePrint(' ', raceLength + 1);
+
+        // print the | for the end of the track
+        System.out.print('|');
+
+        // print a newline to move to the next line
+        System.out.println();
+    }
+
     /***
      * print a character a given number of times.
      * e.g. printmany('x',5) will print: xxxxx
@@ -337,6 +381,9 @@ public class Race {
         JButton button1 = new JButton("Start: Design Track");
         JButton button2 = new JButton("Exit");
 
+        button1.setMaximumSize(new Dimension(200, 50));
+        button2.setMaximumSize(new Dimension(200, 50));
+
         button1.setAlignmentX(Component.CENTER_ALIGNMENT);
         button2.setAlignmentX(Component.CENTER_ALIGNMENT);
         button1.setAlignmentY(Component.CENTER_ALIGNMENT);
@@ -365,14 +412,18 @@ public class Race {
         // Create a new panel
         JPanel trackDesignPanel = new JPanel();
         trackDesignPanel.setLayout(new BoxLayout(trackDesignPanel, BoxLayout.Y_AXIS));
+        trackDesignPanel.setBackground(Color.black);
+        trackDesignPanel.setBorder(BorderFactory.createLineBorder(Color.white, 5, true));
 
         // Add components to the new panel
         JLabel title = new JLabel("Design Track");
         title.setFont(new Font("Arial", Font.BOLD, 24));
+        title.setForeground(Color.white);
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
         trackDesignPanel.add(title);
 
         JLabel label1 = new JLabel("Enter the length of the track (in metres):");
+        label1.setForeground(Color.white);
         label1.setAlignmentX(Component.CENTER_ALIGNMENT);
         trackDesignPanel.add(label1);
 
@@ -381,7 +432,8 @@ public class Race {
         raceLengthTextField.setAlignmentX(Component.CENTER_ALIGNMENT);
         trackDesignPanel.add(raceLengthTextField);
 
-        JLabel label3 = new JLabel("How many tracks (ie. Number of horses) would you like? (1-3)");
+        JLabel label3 = new JLabel("How many tracks would you like? (2-12))");
+        label3.setForeground(Color.white);
         label3.setAlignmentX(Component.CENTER_ALIGNMENT);
         trackDesignPanel.add(label3);
 
@@ -391,11 +443,14 @@ public class Race {
         trackDesignPanel.add(numTracksTextField);
 
         JLabel label2 = new JLabel("What colour would you like the track to be?");
+        label2.setForeground(Color.white);
         label2.setAlignmentX(Component.CENTER_ALIGNMENT);
         trackDesignPanel.add(label2);
 
         JColorChooser colorChooser = new JColorChooser();
         colorChooser.setAlignmentX(Component.CENTER_ALIGNMENT);
+        changeBackgroundColor(colorChooser, Color.BLACK);
+        changeTextColor(colorChooser, Color.white);
         trackDesignPanel.add(colorChooser);
 
         JButton submit = new JButton("Submit");
@@ -435,97 +490,101 @@ public class Race {
         panel.removeAll();
 
         // Create a new panel
-        JPanel horseDesignPanel = new JPanel();
+        horseDesignPanel = new JPanel();
         horseDesignPanel.setLayout(new BoxLayout(horseDesignPanel, BoxLayout.Y_AXIS));
+        horseDesignPanel.setBackground(Color.black);
+        horseDesignPanel.setBorder(BorderFactory.createLineBorder(Color.white, 5, true));
+        horseDesignPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        horseDesignPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
+        horseDesignPanel.setMaximumSize(new Dimension(500, 500));
 
         // Create arrays to store the text fields
-        JTextField[] nameTextFields = new JTextField[horseNum];
-        JTextField[] confidenceTextFields = new JTextField[horseNum];
+        nameTextFields = new ArrayList<>();
+        confidenceTextFields = new ArrayList<>();
 
-        for (int i = 1; i <= horseNum; i++) {
+        addHorseForm(nameTextFields, confidenceTextFields);
 
-            horses.add(new Horse());
-
-            JLabel Colourlabel = new JLabel("What colour would you like horse " + i + " to be?");
-            Colourlabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-            horseDesignPanel.add(Colourlabel);
-
-            JButton button = new JButton();
-            button.setPreferredSize(new Dimension(300, 20));
-            button.setAlignmentX(Component.CENTER_ALIGNMENT);
-            final int finalI = i; // Create a final copy of i
-
-            // Default horse colour is black
-            JLabel horseLabel = new JLabel(new HorseIcon(trackColour, Color.white));
-            horses.get(i - 1).setHorseGUI(horseLabel);
-
-            button.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    Color initialBackground = button.getBackground();
-                    Color color = JColorChooser.showDialog(null, "JColorChooser Sample", initialBackground);
-
-                    button.setBackground(color);
-
-                    JLabel horseLabel = new JLabel(new HorseIcon(trackColour, color));
-                    horses.get(finalI - 1).setHorseGUI(horseLabel);
-
-                }
-            });
-
-            horseDesignPanel.add(button);
-
-            JLabel label = new JLabel("Enter the name of horse " + i + ":");
-            label.setAlignmentX(Component.CENTER_ALIGNMENT);
-            horseDesignPanel.add(label);
-
-            JTextField nameTextField = new JTextField();
-            nameTextField.setMaximumSize(new Dimension(100, 30));
-            nameTextField.setAlignmentX(Component.CENTER_ALIGNMENT);
-            horseDesignPanel.add(nameTextField);
-
-            JLabel label2 = new JLabel("Enter the confidence of horse " + i + " (0-1):");
-            label2.setAlignmentX(Component.CENTER_ALIGNMENT);
-            horseDesignPanel.add(label2);
-
-            JTextField confidenceTextField = new JTextField();
-            confidenceTextField.setMaximumSize(new Dimension(100, 30));
-            confidenceTextField.setAlignmentX(Component.CENTER_ALIGNMENT);
-            horseDesignPanel.add(confidenceTextField);
-
-            nameTextFields[i - 1] = nameTextField;
-            confidenceTextFields[i - 1] = confidenceTextField;
-
-        }
-
-        JButton submit = new JButton("Submit");
+        JButton submit = new JButton("Submit and Start Race");
+        submit.setMaximumSize(new Dimension(200, 50));
+        submit.setEnabled(false); // Disable the button initially, so that minimum 2 horses are added
         submit.setAlignmentX(Component.CENTER_ALIGNMENT);
         submit.addActionListener(e -> {
-            for (int i = 1; i <= horseNum; i++) {
-                try {
-                    String name = nameTextFields[i - 1].getText();
-                    double confidence = Double.parseDouble(confidenceTextFields[i - 1].getText());
 
-                    if (confidence >= 0 && confidence <= 1) {
+            try {
+                String name = nameTextFields.get(currentHorseCount - 2).getText();
+                double confidence = Double.parseDouble(confidenceTextFields.get(currentHorseCount - 2).getText());
 
-                        horses.get(i - 1).setName(name);
-                        horses.get(i - 1).setConfidence(confidence);
-                        System.out.println("Name: " + horses.get(i - 1).getName() + ", Confidence: "
-                                + horses.get(i - 1).getConfidence());
+                if (confidence >= 0 && confidence <= 1) {
 
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Invalid input. Please enter a number between 0 and 1.");
-                        return;
-                    }
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(null, "Invalid input. Please enter a number.");
+                    horses.get(currentHorseCount - 2).setName(name);
+                    horses.get(currentHorseCount - 2).setConfidence(confidence);
+                    System.out.println("Name: " + horses.get(currentHorseCount - 2).getName() + ", Confidence: "
+                            + horses.get(currentHorseCount - 2).getConfidence());
+
+                } else {
+                    JOptionPane.showMessageDialog(null, "Invalid input. Please enter a number between 0 and 1.");
                     return;
                 }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Invalid input. Please enter a number.");
+                return;
             }
 
             startGUI();
         });
 
+        JButton newHorseBtn = new JButton("Submit add Another Horse");
+        newHorseBtn.setMaximumSize(new Dimension(200, 50));
+        if (horses.size() < horseNum) {
+            newHorseBtn.setEnabled(true);
+        } else {
+            newHorseBtn.setEnabled(false);
+        }
+        newHorseBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        newHorseBtn.addActionListener(e -> {
+
+            try {
+                String name = nameTextFields.get(currentHorseCount - 2).getText();
+                double confidence = Double.parseDouble(confidenceTextFields.get(currentHorseCount - 2).getText());
+
+                if (confidence >= 0 && confidence <= 1) {
+
+                    horses.get(currentHorseCount - 2).setName(name);
+                    horses.get(currentHorseCount - 2).setConfidence(confidence);
+                    System.out.println("Name: " + horses.get(currentHorseCount - 2).getName() + ", Confidence: "
+                            + horses.get(currentHorseCount - 2).getConfidence());
+
+                } else {
+                    JOptionPane.showMessageDialog(null, "Invalid input. Please enter a number between 0 and 1.");
+                    return;
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Invalid input. Please enter a number.");
+                return;
+            }
+
+            horseDesignPanel.removeAll();
+            addHorseForm(nameTextFields, confidenceTextFields);
+
+            horseDesignPanel.add(submit);
+            horseDesignPanel.add(newHorseBtn);
+
+            if (horses.size() < horseNum) {
+                newHorseBtn.setEnabled(true);
+                submit.setEnabled(true);
+            } else {
+                newHorseBtn.setEnabled(false);
+                submit.setEnabled(true);
+            }
+
+            // Refresh the panel
+            panel.revalidate();
+            panel.repaint();
+            
+        });
+
         horseDesignPanel.add(submit);
+        horseDesignPanel.add(newHorseBtn);
 
         // Add the new panel to the original panel
         panel.add(horseDesignPanel);
@@ -534,6 +593,122 @@ public class Race {
         panel.revalidate();
         panel.repaint();
 
+    }
+
+    private void addHorseWindow() {
+        frame = new JFrame();
+        frame.setSize(500, 500);
+        frame.setResizable(false);
+        frame.getContentPane().setBackground(Color.black);
+        frame.setLayout(new GridBagLayout()); // Set layout of frame to GridBagLayout
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.anchor = GridBagConstraints.CENTER; // Center panel in frame
+
+        // Create a new panel
+        horseDesignPanel.removeAll();
+
+        addHorseForm(nameTextFields, confidenceTextFields);
+
+        JButton submit = new JButton("Add Horse");
+        submit.setAlignmentX(Component.CENTER_ALIGNMENT);
+        submit.addActionListener(e -> {
+
+            try {
+                String name = nameTextFields.get(currentHorseCount - 2).getText();
+                double confidence = Double.parseDouble(confidenceTextFields.get(currentHorseCount - 2).getText());
+
+                if (confidence >= 0 && confidence <= 1) {
+
+                    horses.get(currentHorseCount - 2).setName(name);
+                    horses.get(currentHorseCount - 2).setConfidence(confidence);
+                    System.out.println("Name: " + horses.get(currentHorseCount - 2).getName() + ", Confidence: "
+                            + horses.get(currentHorseCount - 2).getConfidence());
+
+                } else {
+                    JOptionPane.showMessageDialog(null, "Invalid input. Please enter a number between 0 and 1.");
+                    return;
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Invalid input. Please enter a number.");
+                return;
+            }
+            raceFrame.dispose(); // Close the current
+            if (statsFrame != null) {
+                statsFrame.dispose(); // Close the stats frame
+            }
+            startGUI();
+        });
+
+        horseDesignPanel.add(submit);
+
+        frame.add(panel, gbc);
+
+        frame.setVisible(true);
+
+        // Refresh the panel
+        horseDesignPanel.revalidate();
+        horseDesignPanel.repaint();
+
+    }
+
+    private void addHorseForm(ArrayList<JTextField> nameTextFields, ArrayList<JTextField> confidenceTextFields) {
+        
+        horses.add(new Horse());
+
+        JLabel Colourlabel = new JLabel("What colour would you like horse " + currentHorseCount + " to be?");
+        Colourlabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        Colourlabel.setForeground(Color.white);
+        horseDesignPanel.add(Colourlabel);
+
+        JButton button = new JButton();
+        button.setMaximumSize(new Dimension(100, 50));
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
+        final int finalI = currentHorseCount; // Create a final copy of i
+
+        // Default horse colour is white
+        JLabel horseLabel = new JLabel(new HorseIcon(trackColour, Color.white));
+        horses.get(currentHorseCount - 1).setHorseGUI(horseLabel);
+
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Color initialBackground = button.getBackground();
+                Color color = JColorChooser.showDialog(null, "JColorChooser Sample", initialBackground);
+
+
+                button.setBackground(color);
+
+                JLabel horseLabel = new JLabel(new HorseIcon(trackColour, color));
+                horses.get(finalI - 1).setHorseGUI(horseLabel);
+
+            }
+        });
+
+        horseDesignPanel.add(button);
+
+        JLabel label = new JLabel("Enter the name of horse " + currentHorseCount + ":");
+        label.setForeground(Color.white);
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
+        horseDesignPanel.add(label);
+
+        JTextField nameTextField = new JTextField();
+        nameTextField.setMaximumSize(new Dimension(100, 30));
+        nameTextField.setAlignmentX(Component.CENTER_ALIGNMENT);
+        horseDesignPanel.add(nameTextField);
+
+        JLabel label2 = new JLabel("Enter the confidence of horse " + currentHorseCount + " (0-1):");
+        label2.setForeground(Color.white);
+        label2.setAlignmentX(Component.CENTER_ALIGNMENT);
+        horseDesignPanel.add(label2);
+
+        JTextField confidenceTextField = new JTextField();
+        confidenceTextField.setMaximumSize(new Dimension(100, 30));
+        confidenceTextField.setAlignmentX(Component.CENTER_ALIGNMENT);
+        horseDesignPanel.add(confidenceTextField);
+
+        nameTextFields.add(nameTextField);
+        confidenceTextFields.add(confidenceTextField);
+        currentHorseCount++;
     }
 
     private void startGUI() {
@@ -576,7 +751,17 @@ public class Race {
         JButton statsButton = new JButton("Show Stats");
         statsButton.addActionListener(e -> showStats());
 
-       raceFrame.enableBetBtn();
+        JButton addHorsebtn = new JButton("Add Horse");
+        addHorsebtn.addActionListener(e -> {
+            addHorseWindow();
+        });
+        if (horses.size() >= horseNum) {
+            // Disable the "Add Horse" button
+            addHorsebtn.setEnabled(false);
+        }
+
+
+        raceFrame.enableBetBtn();
 
         // reset all the lanes (all horses not fallen and back to 0).
         for (Horse horse : horses) {
@@ -584,7 +769,6 @@ public class Race {
                 horse.goBackToStart();
             }
         }
-        
 
         long startTime = System.currentTimeMillis();
 
@@ -602,7 +786,7 @@ public class Race {
                 }
 
                 // update horse detail label
-                for (int i = 0; i < horseNum; i++) {
+                for (int i = 0; i < horses.size(); i++) {
                     raceFrame.updateHorseDetails(i);
                 }
 
@@ -647,22 +831,22 @@ public class Race {
                         break;
 
                     } else if (allHorsesHaveFallen()) {
-                        
+
                         ((Timer) e.getSource()).stop(); // Stop the timer
                         JOptionPane.showMessageDialog(raceFrame, "All horses have fallen!");
-    
+
                         user.updateBalance(-user.getBetAmount());
-    
+
                         long endTime = System.currentTimeMillis();
                         double finishingTime = (endTime - startTime) / 1000.0; // convert to seconds
-    
+
                         // Update performance metrics for all horses
-                        for (Horse otherhorse : horses) { 
+                        for (Horse otherhorse : horses) {
                             if (otherhorse != null) {
                                 otherhorse.updatePerformanceMetricsLoss(finishingTime);
                             }
                         }
-    
+
                         // Finalise performance metrics and print them
                         for (Horse allhorses : horses) {
                             if (allhorses != null) {
@@ -670,18 +854,23 @@ public class Race {
                                 allhorses.printPerformanceMetrics();
                             }
                         }
-    
+
                         restartButton.setEnabled(true);
                         break;
                     }
                 }
-
 
                 // Repaint the GUI to reflect the new positions of the horses
                 raceFrame.repaint();
 
                 // update bets label
                 raceFrame.updateStatDetails(user);
+
+                if (horses.size() < horseNum) {
+                    addHorsebtn.setEnabled(true);
+                } else {
+                    addHorsebtn.setEnabled(false);
+                }
             }
         });
 
@@ -691,39 +880,92 @@ public class Race {
         menuBar.add(startButton);
         menuBar.add(restartButton);
         menuBar.add(statsButton);
+        menuBar.add(addHorsebtn);
 
         raceFrame.add(menuBar, BorderLayout.NORTH);
 
     }
 
     private void showStats() {
-
         statsFrame = new JFrame("Horse Stats");
         statsFrame.setSize(500, 500);
         statsFrame.setLayout(new BorderLayout());
-
+    
         JPanel statspanel = new JPanel();
         statspanel.setLayout(new BoxLayout(statspanel, BoxLayout.Y_AXIS));
         statsFrame.add(statspanel, BorderLayout.CENTER);
-
+    
         JLabel title = new JLabel("Horse Stats");
         title.setFont(new Font("Arial", Font.BOLD, 24));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
         statspanel.add(title);
-
+    
+        // Create a JComboBox to hold the horse names
+        JComboBox<String> horseComboBox = new JComboBox<>();
+        horseComboBox.addItem("Select a horse");
         for (Horse horse : horses) {
             if (horse != null) {
-                JLabel[] labels = horse.returnPerformanceMetricsLabels();
-                for (JLabel label : labels) {
-                    label.setAlignmentX(Component.CENTER_ALIGNMENT);
-                    statspanel.add(label);
-                }
-                statspanel.add(Box.createRigidArea(new Dimension(0, 10)));
+                horseComboBox.addItem(horse.getName());
             }
         }
-
-        statsFrame.add(statspanel);
+        horseComboBox.setAlignmentX(Component.CENTER_ALIGNMENT);
+        statspanel.add(horseComboBox);
+    
+        // Create a panel to hold the performance metric labels
+        JPanel metricsPanel = new JPanel();
+        metricsPanel.setLayout(new BoxLayout(metricsPanel, BoxLayout.Y_AXIS));
+        statspanel.add(metricsPanel);
+    
+        // Add an action listener to the JComboBox
+        horseComboBox.addActionListener(e -> {
+            // Clear the metrics panel
+            metricsPanel.removeAll();
+    
+            // Get the selected horse
+            String selectedHorseName = (String) horseComboBox.getSelectedItem();
+            Horse selectedHorse = null;
+            for (Horse horse : horses) {
+                if (horse != null && horse.getName().equals(selectedHorseName)) {
+                    selectedHorse = horse;
+                    break;
+                }
+            }
+    
+            // Display the performance metric labels for the selected horse
+            if (selectedHorse != null) {
+                JLabel[] labels = selectedHorse.returnPerformanceMetricsLabels();
+                for (JLabel label : labels) {
+                    label.setAlignmentX(Component.CENTER_ALIGNMENT);
+                    metricsPanel.add(label);
+                }
+                metricsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+            }
+    
+            // Refresh the stats frame
+            statsFrame.revalidate();
+            statsFrame.repaint();
+        });
+    
         statsFrame.setVisible(true);
+    }
+    
+    private void changeBackgroundColor(JComponent component, Color color) {
+        component.setBackground(color);
+        Component[] components = component.getComponents();
+        for (Component comp : components) {
+            if (comp instanceof JComponent) {
+                changeBackgroundColor((JComponent) comp, color);
+            }
+        }
+    }
 
+    private void changeTextColor(JComponent component, Color color) {
+        component.setForeground(color);
+        Component[] components = component.getComponents();
+        for (Component comp : components) {
+            if (comp instanceof JComponent) {
+                changeTextColor((JComponent) comp, color);
+            }
+        }
     }
 }

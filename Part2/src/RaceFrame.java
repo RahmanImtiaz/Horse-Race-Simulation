@@ -38,7 +38,7 @@ public class RaceFrame extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JPanel raceDesignPanel = new JPanel();
-        raceDesignPanel.setLayout(new BoxLayout(raceDesignPanel, BoxLayout.Y_AXIS));
+        raceDesignPanel.setLayout(new GridLayout(horseNum, 1));
 
         for (int i = 0; i < horseNum; i++) {
 
@@ -57,26 +57,27 @@ public class RaceFrame extends JFrame {
             horsePanel.setLayout(null); // Set layout to null
             horsePanel.setPreferredSize(new Dimension(((raceLength) * 10), 70)); // Set preferred size to 70
 
-            JLabel horseGUI = null;
-            horseGUI = horses.get(i).getHorseGUI();
+            if (i < horses.size()) {
+                JLabel horseGUI = null;
+                horseGUI = horses.get(i).getHorseGUI();
 
-            if (horseGUI != null) {
-                horseGUI.setBounds(50, 50, horseGUI.getPreferredSize().width, horseGUI.getPreferredSize().height);
-                horseWidth = horseGUI.getPreferredSize().width;
-                horsePanel.add(horseGUI);
+                if (horseGUI != null) {
+                    horseGUI.setBounds(50, 50, horseGUI.getPreferredSize().width, horseGUI.getPreferredSize().height);
+                    horseWidth = horseGUI.getPreferredSize().width;
+                    horsePanel.add(horseGUI);
+                }
+
+                horseDetails = new JTextArea();
+                horseDetails.setText(
+                        " " + horses.get(i).getName() + "\n(Current confidence "
+                                + horses.get(i).getConfidence() + ")");
+                horseDetails.setBounds(((raceLength) * 10) + 60, 50, 200, 30);
+                horseDetails.setEditable(false);
+                horseDetails.setForeground(Color.WHITE);
+                horseDetails.setBackground(Color.BLACK);
+                horsePanel.add(horseDetails);
+                horseDetailsList.add(horseDetails);
             }
-
-            horseDetails = new JTextArea();
-            horseDetails.setText(
-                    " " +  horses.get(i).getName() + "\n(Current confidence "
-                            +  horses.get(i).getConfidence() + ")");
-                            
-            horseDetails.setBounds(((raceLength) * 10) + 60, 50, 200, 30);
-            horseDetails.setEditable(false);
-            horseDetails.setForeground(Color.WHITE);
-            horseDetails.setBackground(Color.BLACK);
-            horsePanel.add(horseDetails);
-            horseDetailsList.add(horseDetails);
 
             raceDesignPanel.add(horsePanel);
         }
@@ -91,8 +92,8 @@ public class RaceFrame extends JFrame {
     public void updateHorseDetails(int i) {
         JTextArea horseDetails = horseDetailsList.get(i);
         horseDetails.setText(
-            " " +  horses.get(i).getName() + "\n(Current confidence "
-                    +  horses.get(i).getConfidence() + ")");
+                " " + horses.get(i).getName() + "\n(Current confidence "
+                        + horses.get(i).getConfidence() + ")");
     }
 
     public int getHorseWidth() {
@@ -119,7 +120,7 @@ public class RaceFrame extends JFrame {
 
         int horsenum = 1;
         for (Horse horse : horses) {
-            horseNamesList.add("Horse "+horsenum+": " + horse.getName());
+            horseNamesList.add("Horse " + horsenum + ": " + horse.getName());
             horsenum++;
         }
 

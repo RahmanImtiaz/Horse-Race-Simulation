@@ -18,6 +18,7 @@ public class Horse
     private int distanceTravelled;
     private boolean fallen;
     private double confidence;
+    private String breed;
     private JLabel horseLabel;
     private List<Double> speeds;
     private double avgSpeed;
@@ -44,9 +45,11 @@ public class Horse
        this.finishingTimes = new ArrayList<>();
     }
 
+    // for gui
     public Horse()
     {
        this.name = "UNDEFINED";
+       this.breed = "UNDEFINED";
        this.horseLabel = null;
        this.confidence = 0.0;
        this.avgSpeed = 0;
@@ -128,6 +131,16 @@ public class Horse
     public JLabel getHorseGUI()
     {
         return this.horseLabel;
+    }
+
+    public void setBreed(String newBreed)
+    {
+        this.breed = newBreed;
+    }
+
+    public String getBreed()
+    {
+        return this.breed;
     }
 
     public  JLabel horseFallenGUI()
