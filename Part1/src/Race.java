@@ -17,6 +17,7 @@ import java.util.ArrayList;
 public class Race {
     private int raceLength;
     private List<Horse> horses;
+    private int laneAmount;
 
     /**
      * Constructor for objects of class Race
@@ -27,6 +28,7 @@ public class Race {
     public Race(int distance) {
         // initialise instance variables
         raceLength = distance;
+        laneAmount = 2; // default 2 lanes (minimum 2 horses)
         horses = new ArrayList<Horse>();
     }
 
@@ -51,7 +53,7 @@ public class Race {
 
         // create and add the horses
         createAndAddHorses();
-
+        laneAmount = enterLaneAmount(horses.size(), 12, "Enter the amount of lanes ("+horses.size()+"-12)");
         String option = "";
         do {
 
@@ -184,6 +186,27 @@ public class Race {
         return confidence;
     }
 
+    private int enterLaneAmount (int min, int max, String msg) {
+        Scanner sc = new Scanner(System.in);
+        int amount = 2; // default 2 lanes
+        boolean validInput = false;
+        do {
+            try {
+                System.out.println(msg);
+                amount = sc.nextInt();
+                if (amount>=min && amount<=max) {
+                    validInput = true;
+                } else {
+                    System.out.println("Please enter a number between "+min+" and "+max+".");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("That's not a valid number!");
+                sc.next(); // consume the invalid token
+            }
+        } while (!validInput);
+        return amount;
+    }
+
     /**
      * Randomly make a horse move forward or fall depending
      * on its confidence rating
@@ -246,6 +269,10 @@ public class Race {
                 System.out.println();
             }
         }
+        for (int i = 0; i < laneAmount - horses.size(); i++) {
+            printEmptyLane();
+        }
+
         multiplePrint('=', raceLength + 3); // bottom edge of track
         System.out.println();
     }
@@ -285,6 +312,20 @@ public class Race {
         // print the horse's name and confidence
         System.out.print(" " + theHorse.getName() + " (Current confidence "
                 + String.format("%.1f", theHorse.getConfidence()) + ")");
+    }
+
+    private void printEmptyLane() {
+        // print a | for the beginning of the lane
+        System.out.print('|');
+    
+        // print the spaces for the entire lane
+        multiplePrint(' ', raceLength+1);
+    
+        // print the | for the end of the track
+        System.out.print('|');
+    
+        // print a newline to move to the next line
+        System.out.println();
     }
 
     /***
