@@ -34,6 +34,7 @@ public class Race {
     private int currentHorseCount = 1;
     private ArrayList<JTextField> nameTextFields;
     private ArrayList<JTextField> confidenceTextFields;
+    private JButton addHorsebtn;
 
     /**
      * Constructor for objects of class Race
@@ -580,7 +581,7 @@ public class Race {
             // Refresh the panel
             panel.revalidate();
             panel.repaint();
-            
+
         });
 
         horseDesignPanel.add(submit);
@@ -601,6 +602,7 @@ public class Race {
         frame.setResizable(false);
         frame.getContentPane().setBackground(Color.black);
         frame.setLayout(new GridBagLayout()); // Set layout of frame to GridBagLayout
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.anchor = GridBagConstraints.CENTER; // Center panel in frame
@@ -653,7 +655,7 @@ public class Race {
     }
 
     private void addHorseForm(ArrayList<JTextField> nameTextFields, ArrayList<JTextField> confidenceTextFields) {
-        
+
         horses.add(new Horse());
 
         JLabel Colourlabel = new JLabel("What colour would you like horse " + currentHorseCount + " to be?");
@@ -674,7 +676,6 @@ public class Race {
             public void actionPerformed(ActionEvent e) {
                 Color initialBackground = button.getBackground();
                 Color color = JColorChooser.showDialog(null, "JColorChooser Sample", initialBackground);
-
 
                 button.setBackground(color);
 
@@ -726,6 +727,7 @@ public class Race {
                 if (timer != null) {
                     timer.start(); // Start the timer
                     startButton.setEnabled(false); // Disable the start button
+                    addHorsebtn.setEnabled(false); // Disable the "Add Horse" button
                     raceFrame.disableBetBtn();
                 }
             }
@@ -751,7 +753,7 @@ public class Race {
         JButton statsButton = new JButton("Show Stats");
         statsButton.addActionListener(e -> showStats());
 
-        JButton addHorsebtn = new JButton("Add Horse");
+        addHorsebtn = new JButton("Add Horse");
         addHorsebtn.addActionListener(e -> {
             addHorseWindow();
         });
@@ -759,7 +761,6 @@ public class Race {
             // Disable the "Add Horse" button
             addHorsebtn.setEnabled(false);
         }
-
 
         raceFrame.enableBetBtn();
 
@@ -888,49 +889,45 @@ public class Race {
 
     private void showStats() {
         statsFrame = new JFrame("Horse Stats");
-        statsFrame.setSize(500, 500);
+        statsFrame.setSize(300, 300);
         statsFrame.setLayout(new BorderLayout());
-    
+
         JPanel statspanel = new JPanel();
         statspanel.setLayout(new BoxLayout(statspanel, BoxLayout.Y_AXIS));
         statsFrame.add(statspanel, BorderLayout.CENTER);
-    
+
         JLabel title = new JLabel("Horse Stats");
         title.setFont(new Font("Arial", Font.BOLD, 24));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
         statspanel.add(title);
-    
+
         // Create a JComboBox to hold the horse names
         JComboBox<String> horseComboBox = new JComboBox<>();
         horseComboBox.addItem("Select a horse");
+        int horsenum = 1;
         for (Horse horse : horses) {
             if (horse != null) {
-                horseComboBox.addItem(horse.getName());
+                horseComboBox.addItem("Horse " + horsenum + ": " + horse.getName());
+                horsenum++;
             }
         }
         horseComboBox.setAlignmentX(Component.CENTER_ALIGNMENT);
         statspanel.add(horseComboBox);
-    
+
         // Create a panel to hold the performance metric labels
         JPanel metricsPanel = new JPanel();
         metricsPanel.setLayout(new BoxLayout(metricsPanel, BoxLayout.Y_AXIS));
         statspanel.add(metricsPanel);
-    
+
         // Add an action listener to the JComboBox
         horseComboBox.addActionListener(e -> {
             // Clear the metrics panel
             metricsPanel.removeAll();
-    
+
             // Get the selected horse
-            String selectedHorseName = (String) horseComboBox.getSelectedItem();
-            Horse selectedHorse = null;
-            for (Horse horse : horses) {
-                if (horse != null && horse.getName().equals(selectedHorseName)) {
-                    selectedHorse = horse;
-                    break;
-                }
-            }
-    
+            int selectedHorseIndex = horseComboBox.getSelectedIndex() - 1;
+            Horse selectedHorse = horses.get(selectedHorseIndex);
+
             // Display the performance metric labels for the selected horse
             if (selectedHorse != null) {
                 JLabel[] labels = selectedHorse.returnPerformanceMetricsLabels();
@@ -940,15 +937,15 @@ public class Race {
                 }
                 metricsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
             }
-    
+
             // Refresh the stats frame
             statsFrame.revalidate();
             statsFrame.repaint();
         });
-    
+
         statsFrame.setVisible(true);
     }
-    
+
     private void changeBackgroundColor(JComponent component, Color color) {
         component.setBackground(color);
         Component[] components = component.getComponents();
