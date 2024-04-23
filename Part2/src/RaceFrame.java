@@ -19,7 +19,7 @@ public class RaceFrame extends JFrame {
     private Color trackColour;
     private int raceLength;
     private int horseNum;
-    private Horse h1, h2, h3;
+    private List<Horse> horses;
     private JTextArea horseDetails;
     private List<JTextArea> horseDetailsList = new ArrayList<>();
     private int horseWidth;
@@ -27,14 +27,12 @@ public class RaceFrame extends JFrame {
     private int selectedHorseIndex; // bet on horse 0, 1, 2
     private JButton placeBetBtn;
 
-    public RaceFrame(Color trackColour, int raceLength, int horseNum, Horse h1, Horse h2, Horse h3, User user) {
+    public RaceFrame(Color trackColour, int raceLength, int horseNum, List<Horse> horses, User user) {
         this.trackColour = trackColour;
         this.raceLength = raceLength;
         this.horseNum = horseNum;
-        this.h1 = h1;
-        this.h2 = h2;
-        this.h3 = h3;
-        this.selectedHorseIndex = -1;
+        this.horses = horses;
+        this.selectedHorseIndex = 0;
 
         this.setExtendedState(Frame.MAXIMIZED_BOTH);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -60,13 +58,7 @@ public class RaceFrame extends JFrame {
             horsePanel.setPreferredSize(new Dimension(((raceLength) * 10), 70)); // Set preferred size to 70
 
             JLabel horseGUI = null;
-            if (i == 0) {
-                horseGUI = h1.getHorseGUI();
-            } else if (i == 1) {
-                horseGUI = h2.getHorseGUI();
-            } else if (i == 2) {
-                horseGUI = h3.getHorseGUI();
-            }
+            horseGUI = horses.get(i).getHorseGUI();
 
             if (horseGUI != null) {
                 horseGUI.setBounds(50, 50, horseGUI.getPreferredSize().width, horseGUI.getPreferredSize().height);
@@ -76,8 +68,9 @@ public class RaceFrame extends JFrame {
 
             horseDetails = new JTextArea();
             horseDetails.setText(
-                    " " + (i == 0 ? h1.getName() : (i == 1 ? h2.getName() : h3.getName())) + "\n(Current confidence "
-                            + (i == 0 ? h1.getConfidence() : (i == 1 ? h2.getConfidence() : h3.getConfidence())) + ")");
+                    " " +  horses.get(i).getName() + "\n(Current confidence "
+                            +  horses.get(i).getConfidence() + ")");
+                            
             horseDetails.setBounds(((raceLength) * 10) + 60, 50, 200, 30);
             horseDetails.setEditable(false);
             horseDetails.setForeground(Color.WHITE);
@@ -98,8 +91,8 @@ public class RaceFrame extends JFrame {
     public void updateHorseDetails(int i) {
         JTextArea horseDetails = horseDetailsList.get(i);
         horseDetails.setText(
-                " " + (i == 0 ? h1.getName() : (i == 1 ? h2.getName() : h3.getName())) + "\n(Current confidence "
-                        + (i == 0 ? h1.getConfidence() : (i == 1 ? h2.getConfidence() : h3.getConfidence())) + ")");
+            " " +  horses.get(i).getName() + "\n(Current confidence "
+                    +  horses.get(i).getConfidence() + ")");
     }
 
     public int getHorseWidth() {
@@ -123,15 +116,13 @@ public class RaceFrame extends JFrame {
         bettingPanel.add(createCenteredBox(bettingLabel));
 
         List<String> horseNamesList = new ArrayList<>();
-        if (h1 != null) {
-            horseNamesList.add("Horse 1: " + h1.getName());
+
+        int horsenum = 1;
+        for (Horse horse : horses) {
+            horseNamesList.add("Horse "+horsenum+": " + horse.getName());
+            horsenum++;
         }
-        if (h2 != null) {
-            horseNamesList.add("Horse 2: " + h2.getName());
-        }
-        if (h3 != null) {
-            horseNamesList.add("Horse 3: " + h3.getName());
-        }
+
         String[] horseNames = horseNamesList.toArray(new String[0]);
         JComboBox<String> comboBox = new JComboBox<>(horseNames);
         comboBox.setMaximumSize(new Dimension(100, 30));
@@ -141,7 +132,7 @@ public class RaceFrame extends JFrame {
         oddsLabel.setForeground(Color.WHITE);
         bettingPanel.add(createCenteredBox(oddsLabel));
 
-        double odds = h1.calculateOdds(raceLength);
+        double odds = horses.get(0).calculateOdds(raceLength);
         oddsLabel.setText(String.format("Odds: %.2f", odds));
         oddsLabel.setForeground(Color.WHITE);
 
@@ -159,21 +150,8 @@ public class RaceFrame extends JFrame {
                 selectedHorseIndex = comboBox.getSelectedIndex();
 
                 // Find the Horse object based on the selected index
+                double odds = horses.get(selectedHorseIndex).calculateOdds(raceLength);
 
-                double odds = 0;
-                if (selectedHorseIndex == 0) {
-                    // Calculate the odds of the selected horse
-                    odds = h1.calculateOdds(raceLength);
-
-                } else if (selectedHorseIndex == 1) {
-                    // Calculate the odds of the selected horse
-                    odds = h2.calculateOdds(raceLength);
-
-                } else if (selectedHorseIndex == 2) {
-                    // Calculate the odds of the selected horse
-                    odds = h3.calculateOdds(raceLength);
-
-                }
                 // Display the odds (for example, in a JLabel)
                 oddsLabel.setText(String.format("Odds: %.2f", odds));
                 oddsLabel.setForeground(Color.WHITE);
@@ -243,20 +221,7 @@ public class RaceFrame extends JFrame {
     }
 
     public void updateStatDetails(User user) {
-        double odds = 0;
-        if (selectedHorseIndex == 0) {
-            // Calculate the odds of the selected horse
-            odds = h1.calculateOdds(raceLength);
-
-        } else if (selectedHorseIndex == 1) {
-            // Calculate the odds of the selected horse
-            odds = h2.calculateOdds(raceLength);
-
-        } else if (selectedHorseIndex == 2) {
-            // Calculate the odds of the selected horse
-            odds = h3.calculateOdds(raceLength);
-
-        }
+        double odds = horses.get(selectedHorseIndex).calculateOdds(raceLength);
 
         // update the odds label
         betsLabelList.get(0).setText(String.format("Odds: %.2f", odds));
