@@ -38,7 +38,7 @@ public class RaceFrame extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JPanel raceDesignPanel = new JPanel();
-        raceDesignPanel.setLayout(new GridLayout(horseNum, 1));
+        raceDesignPanel.setLayout(new BoxLayout(raceDesignPanel, BoxLayout.Y_AXIS));
 
         for (int i = 0; i < horseNum; i++) {
 
@@ -48,21 +48,21 @@ public class RaceFrame extends JFrame {
                     super.paintComponent(g);
                     setBackground(Color.BLACK);
                     g.setColor(trackColour);
-                    g.fillRect(50, 50, ((raceLength) * 10), 60);
+                    g.fillRect(50, 0, ((raceLength) * 10), 60);
 
                     g.setColor(Color.WHITE); // Set the color of the border
-                    g.drawRect(50, 50, ((raceLength) * 10), 60);
+                    g.drawRect(50, 0, ((raceLength) * 10), 60);
                 }
             };
             horsePanel.setLayout(null); // Set layout to null
-            horsePanel.setPreferredSize(new Dimension(((raceLength) * 10), 70)); // Set preferred size to 70
+            horsePanel.setSize(horsePanel.getPreferredSize().width, 120);
 
             if (i < horses.size()) {
                 JLabel horseGUI = null;
                 horseGUI = horses.get(i).getHorseGUI();
 
                 if (horseGUI != null) {
-                    horseGUI.setBounds(50, 50, horseGUI.getPreferredSize().width, horseGUI.getPreferredSize().height);
+                    horseGUI.setBounds(50, 0, horseGUI.getPreferredSize().width, horseGUI.getPreferredSize().height);
                     horseWidth = horseGUI.getPreferredSize().width;
                     horsePanel.add(horseGUI);
                 }
@@ -71,7 +71,7 @@ public class RaceFrame extends JFrame {
                 horseDetails.setText(
                         " " + horses.get(i).getName() + "\n(Current confidence "
                                 + horses.get(i).getConfidence() + ")");
-                horseDetails.setBounds(((raceLength) * 10) + 60, 50, 200, 30);
+                horseDetails.setBounds(((raceLength) * 10) + 60, 1, 200, 30);
                 horseDetails.setEditable(false);
                 horseDetails.setForeground(Color.WHITE);
                 horseDetails.setBackground(Color.BLACK);
@@ -79,7 +79,7 @@ public class RaceFrame extends JFrame {
                 horseDetailsList.add(horseDetails);
 
                 JLabel horseBreedIcon = new JLabel(horses.get(i).getBreedIcon());
-                horseBreedIcon.setBounds(((raceLength) * 10) + 60, 80, horseBreedIcon.getPreferredSize().width, horseBreedIcon.getPreferredSize().height);
+                horseBreedIcon.setBounds(((raceLength) * 10) + 60, 31, horseBreedIcon.getPreferredSize().width, horseBreedIcon.getPreferredSize().height);
                 horsePanel.add(horseBreedIcon);
             }
 

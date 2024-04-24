@@ -6,10 +6,12 @@ public class HorseIcon implements Icon {
     private final int size = 60; // Increase size for better detail
     private final Color color;
     private final Color overlapColor; // Color for the overlapping part
+    private String unicode;
 
-    public HorseIcon(Color color, Color overlapColor) {
+    public HorseIcon(Color color, Color overlapColor, String unicode) {
         this.color = color;
         this.overlapColor = overlapColor;
+        this.unicode = unicode;
     }
 
     @Override
@@ -24,7 +26,7 @@ public void paintIcon(Component c, Graphics g, int x, int y) {
     g2d.setColor(color); // Set the desired color here
 
     // Draw horse emoji onto the BufferedImage
-    g2d.drawString("\uD83D\uDC0E", 0, size);
+    g2d.drawString(unicode, 0, size);
 
     // Flip the BufferedImage horizontally
     BufferedImage mirroredImg = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);

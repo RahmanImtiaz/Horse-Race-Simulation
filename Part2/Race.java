@@ -35,6 +35,7 @@ public class Race {
     private ArrayList<JTextField> nameTextFields;
     private ArrayList<JTextField> confidenceTextFields;
     private ArrayList<Object[]> breedItems;
+    private ArrayList<String> accessoriesList;
     private JButton addHorsebtn;
 
     /**
@@ -248,12 +249,14 @@ public class Race {
             // so if you double the confidence, the probability that it will fall is *2
             if (Math.random() < (0.1 * theHorse.getConfidence() * theHorse.getConfidence())) {
                 theHorse.fall();
+                theHorse.horseFallenGUI();
                 changeHorseConfidence(theHorse);
             }
 
             // if the horse has not moved forward at all, then it has fallen
             if (theHorse.getConfidence() == 0) {
                 theHorse.fall();
+                theHorse.horseFallenGUI();
             }
         }
     }
@@ -504,8 +507,9 @@ public class Race {
         nameTextFields = new ArrayList<>();
         confidenceTextFields = new ArrayList<>();
         breedItems = new ArrayList<>();
+        accessoriesList = new ArrayList<>();
 
-        addHorseForm(nameTextFields, confidenceTextFields, breedItems);
+        addHorseForm(nameTextFields, confidenceTextFields, breedItems, accessoriesList);
 
         JButton submit = new JButton("Submit and Start Race");
         submit.setMaximumSize(new Dimension(200, 50));
@@ -518,24 +522,30 @@ public class Race {
                 double confidence = Double.parseDouble(confidenceTextFields.get(currentHorseCount - 2).getText());
                 ImageIcon icon = null;
                 String breed = null;
-                if ((currentHorseCount -2) < breedItems.size()) {
-                Object[] selectedItem = breedItems.get(currentHorseCount - 2);
-                icon = (ImageIcon) selectedItem[0];
-                breed = (String) selectedItem[1];
+                if ((currentHorseCount - 2) < breedItems.size()) {
+                    Object[] selectedItem = breedItems.get(currentHorseCount - 2);
+                    icon = (ImageIcon) selectedItem[0];
+                    breed = (String) selectedItem[1];
                 }
-                
 
-                if (confidence >= 0 && confidence <= 1 && icon != null){
+                String accessories = null;
+                if ((currentHorseCount - 2) < accessoriesList.size()) {
+                    accessories = accessoriesList.get(currentHorseCount - 2);
+                }
+
+                if (confidence >= 0 && confidence <= 1 && icon != null && accessories != null) {
 
                     horses.get(currentHorseCount - 2).setName(name);
                     horses.get(currentHorseCount - 2).setConfidence(confidence);
                     horses.get(currentHorseCount - 2).setBreed(breed);
                     horses.get(currentHorseCount - 2).setBreedIcon(icon);
+                    horses.get(currentHorseCount - 2).setAccessory(accessories);
                     System.out.println("Name: " + horses.get(currentHorseCount - 2).getName() + ", Confidence: "
                             + horses.get(currentHorseCount - 2).getConfidence());
 
                 } else {
-                    JOptionPane.showMessageDialog(null, "Invalid input! Please enter a number between 0 and 1. And/or select a breed.");
+                    JOptionPane.showMessageDialog(null,
+                            "Invalid input! Please enter a number between 0 and 1. And/or select a breed/Accessory.");
                     return;
                 }
             } catch (NumberFormatException ex) {
@@ -561,23 +571,30 @@ public class Race {
                 double confidence = Double.parseDouble(confidenceTextFields.get(currentHorseCount - 2).getText());
                 ImageIcon icon = null;
                 String breed = null;
-                if ((currentHorseCount -2) < breedItems.size()) {
-                Object[] selectedItem = breedItems.get(currentHorseCount - 2);
-                icon = (ImageIcon) selectedItem[0];
-                breed = (String) selectedItem[1];
+                if ((currentHorseCount - 2) < breedItems.size()) {
+                    Object[] selectedItem = breedItems.get(currentHorseCount - 2);
+                    icon = (ImageIcon) selectedItem[0];
+                    breed = (String) selectedItem[1];
                 }
 
-                if (confidence >= 0 && confidence <= 1 && icon != null){
+                String accessories = null;
+                if ((currentHorseCount - 2) < accessoriesList.size()) {
+                    accessories = accessoriesList.get(currentHorseCount - 2);
+                }
+
+                if (confidence >= 0 && confidence <= 1 && icon != null && accessories != null) {
 
                     horses.get(currentHorseCount - 2).setName(name);
                     horses.get(currentHorseCount - 2).setConfidence(confidence);
                     horses.get(currentHorseCount - 2).setBreed(breed);
                     horses.get(currentHorseCount - 2).setBreedIcon(icon);
+                    horses.get(currentHorseCount - 2).setAccessory(accessories);
                     System.out.println("Name: " + horses.get(currentHorseCount - 2).getName() + ", Confidence: "
                             + horses.get(currentHorseCount - 2).getConfidence());
 
                 } else {
-                    JOptionPane.showMessageDialog(null, "Invalid input! Please enter a number between 0 and 1. And/or select a breed.");
+                    JOptionPane.showMessageDialog(null,
+                            "Invalid input! Please enter a number between 0 and 1. And/or select a breed/Accessory.");
                     return;
                 }
             } catch (NumberFormatException ex) {
@@ -586,7 +603,7 @@ public class Race {
             }
 
             horseDesignPanel.removeAll();
-            addHorseForm(nameTextFields, confidenceTextFields, breedItems);
+            addHorseForm(nameTextFields, confidenceTextFields, breedItems, accessoriesList);
 
             horseDesignPanel.add(submit);
             horseDesignPanel.add(newHorseBtn);
@@ -631,7 +648,7 @@ public class Race {
         // Create a new panel
         horseDesignPanel.removeAll();
 
-        addHorseForm(nameTextFields, confidenceTextFields, breedItems);
+        addHorseForm(nameTextFields, confidenceTextFields, breedItems, accessoriesList);
 
         JButton submit = new JButton("Add Horse");
         submit.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -642,23 +659,30 @@ public class Race {
                 double confidence = Double.parseDouble(confidenceTextFields.get(currentHorseCount - 2).getText());
                 ImageIcon icon = null;
                 String breed = null;
-                if ((currentHorseCount -2) < breedItems.size()) {
-                Object[] selectedItem = breedItems.get(currentHorseCount - 2);
-                icon = (ImageIcon) selectedItem[0];
-                breed = (String) selectedItem[1];
+                if ((currentHorseCount - 2) < breedItems.size()) {
+                    Object[] selectedItem = breedItems.get(currentHorseCount - 2);
+                    icon = (ImageIcon) selectedItem[0];
+                    breed = (String) selectedItem[1];
                 }
 
-                if (confidence >= 0 && confidence <= 1 && icon != null){
+                String accessories = null;
+                if ((currentHorseCount - 2) < accessoriesList.size()) {
+                    accessories = accessoriesList.get(currentHorseCount - 2);
+                }
+
+                if (confidence >= 0 && confidence <= 1 && icon != null && accessories != null) {
 
                     horses.get(currentHorseCount - 2).setName(name);
                     horses.get(currentHorseCount - 2).setConfidence(confidence);
                     horses.get(currentHorseCount - 2).setBreed(breed);
                     horses.get(currentHorseCount - 2).setBreedIcon(icon);
+                    horses.get(currentHorseCount - 2).setAccessory(accessories);
                     System.out.println("Name: " + horses.get(currentHorseCount - 2).getName() + ", Confidence: "
                             + horses.get(currentHorseCount - 2).getConfidence());
 
                 } else {
-                    JOptionPane.showMessageDialog(null, "Invalid input! Please enter a number between 0 and 1. And/or select a breed.");
+                    JOptionPane.showMessageDialog(null,
+                            "Invalid input! Please enter a number between 0 and 1. And/or select a breed/Accessory.");
                     return;
                 }
             } catch (NumberFormatException ex) {
@@ -685,7 +709,8 @@ public class Race {
     }
 
     @SuppressWarnings("unchecked")
-    private void addHorseForm(ArrayList<JTextField> nameTextFields, ArrayList<JTextField> confidenceTextFields, ArrayList<Object[]> breedItems) {
+    private void addHorseForm(ArrayList<JTextField> nameTextFields, ArrayList<JTextField> confidenceTextFields,
+            ArrayList<Object[]> breedItems, ArrayList<String> accessoriesList) {
 
         horses.add(new Horse());
 
@@ -701,8 +726,9 @@ public class Race {
         final int finalI = currentHorseCount; // Create a final copy of i
 
         // Default horse colour is white
-        JLabel horseLabel = new JLabel(new HorseIcon(trackColour, Color.white));
+        JLabel horseLabel = new JLabel(new HorseIcon(trackColour, Color.white, "\uD83D\uDC0E"));
         horses.get(currentHorseCount - 1).setHorseGUI(horseLabel);
+        horses.get(finalI - 1).setHorseColor(Color.white);
 
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -711,8 +737,9 @@ public class Race {
 
                 button.setBackground(color);
 
-                JLabel horseLabel = new JLabel(new HorseIcon(trackColour, color));
+                JLabel horseLabel = new JLabel(new HorseIcon(trackColour, color, "\uD83D\uDC0E"));
                 horses.get(finalI - 1).setHorseGUI(horseLabel);
+                horses.get(finalI - 1).setHorseColor(color);
 
             }
         });
@@ -750,13 +777,17 @@ public class Race {
         ImageIcon[] icons = new ImageIcon[5];
         icons[0] = null;
         icons[1] = new ImageIcon(
-                new ImageIcon(currentDirectory+"/horseIcon.png").getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH));
+                new ImageIcon(currentDirectory + "/horseIcon.png").getImage().getScaledInstance(25, 25,
+                        Image.SCALE_SMOOTH));
         icons[2] = new ImageIcon(
-                new ImageIcon(currentDirectory+"/ponyIcon.png").getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH));
+                new ImageIcon(currentDirectory + "/ponyIcon.png").getImage().getScaledInstance(25, 25,
+                        Image.SCALE_SMOOTH));
         icons[3] = new ImageIcon(
-                new ImageIcon(currentDirectory+"/donkeyIcon.png").getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH));
+                new ImageIcon(currentDirectory + "/donkeyIcon.png").getImage().getScaledInstance(25, 25,
+                        Image.SCALE_SMOOTH));
         icons[4] = new ImageIcon(
-                new ImageIcon(currentDirectory+"/unicornIcon.png").getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH));
+                new ImageIcon(currentDirectory + "/unicornIcon.png").getImage().getScaledInstance(25, 25,
+                        Image.SCALE_SMOOTH));
 
         // Create an array to hold the names
         String[] names = { "Select a Horse", "Horse", "Pony", "Donkey", "Unicorn" };
@@ -804,6 +835,32 @@ public class Race {
         breedsMenu.setMaximumSize(new Dimension(100, 30));
         breedsMenu.setAlignmentX(Component.CENTER_ALIGNMENT);
         horseDesignPanel.add(breedsMenu);
+
+        JLabel accessoriesLabel = new JLabel(
+                "What accessories would you like horse " + currentHorseCount + " to have?");
+        accessoriesLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        accessoriesLabel.setForeground(Color.white);
+        horseDesignPanel.add(accessoriesLabel);
+
+        JComboBox accessoriesMenu = new JComboBox();
+        accessoriesMenu.addItem("Select an Accessory");
+        accessoriesMenu.addItem("Saddle");
+        accessoriesMenu.addItem("Horseshoes");
+        accessoriesMenu.setMaximumSize(new Dimension(100, 30));
+        horseDesignPanel.add(accessoriesMenu);
+
+        accessoriesMenu.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String accessories = (String) accessoriesMenu.getSelectedItem();
+                if ("Select an Accessory".equals(accessories)) {
+                    JOptionPane.showMessageDialog(null, "Please select an accessory.", "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                } else {
+                    accessoriesList.add(accessories);
+                }
+            }
+        });
 
         nameTextFields.add(nameTextField);
         confidenceTextFields.add(confidenceTextField);
