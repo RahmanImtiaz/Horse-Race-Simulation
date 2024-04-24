@@ -744,17 +744,19 @@ public class Race {
         label3.setAlignmentX(Component.CENTER_ALIGNMENT);
         horseDesignPanel.add(label3);
 
+        String currentDirectory = System.getProperty("user.dir");
+        System.out.println("Current working directory : " + currentDirectory);
         // Create an array to hold the icons
         ImageIcon[] icons = new ImageIcon[5];
         icons[0] = null;
         icons[1] = new ImageIcon(
-                new ImageIcon("src/horseIcon.png").getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH));
+                new ImageIcon(currentDirectory+"/horseIcon.png").getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH));
         icons[2] = new ImageIcon(
-                new ImageIcon("src/ponyIcon.png").getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH));
+                new ImageIcon(currentDirectory+"/ponyIcon.png").getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH));
         icons[3] = new ImageIcon(
-                new ImageIcon("src/donkeyIcon.png").getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH));
+                new ImageIcon(currentDirectory+"/donkeyIcon.png").getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH));
         icons[4] = new ImageIcon(
-                new ImageIcon("src/unicornIcon.png").getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH));
+                new ImageIcon(currentDirectory+"/unicornIcon.png").getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH));
 
         // Create an array to hold the names
         String[] names = { "Select a Horse", "Horse", "Pony", "Donkey", "Unicorn" };
