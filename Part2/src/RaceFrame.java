@@ -77,6 +77,10 @@ public class RaceFrame extends JFrame {
                 horseDetails.setBackground(Color.BLACK);
                 horsePanel.add(horseDetails);
                 horseDetailsList.add(horseDetails);
+
+                JLabel horseBreedIcon = new JLabel(horses.get(i).getBreedIcon());
+                horseBreedIcon.setBounds(((raceLength) * 10) + 60, 80, horseBreedIcon.getPreferredSize().width, horseBreedIcon.getPreferredSize().height);
+                horsePanel.add(horseBreedIcon);
             }
 
             raceDesignPanel.add(horsePanel);
@@ -110,7 +114,7 @@ public class RaceFrame extends JFrame {
         bettingPanel.setLayout(new BoxLayout(bettingPanel, BoxLayout.Y_AXIS));
 
         bettingPanel.setBackground(Color.DARK_GRAY);
-        bettingPanel.setPreferredSize(new Dimension(400, bettingPanel.getHeight()));
+        bettingPanel.setPreferredSize(new Dimension(300, bettingPanel.getHeight()));
 
         JLabel bettingLabel = new JLabel("Place your bets here!");
         bettingLabel.setForeground(Color.WHITE);

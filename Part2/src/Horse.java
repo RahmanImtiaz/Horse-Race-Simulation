@@ -1,6 +1,11 @@
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
 /**
@@ -19,6 +24,7 @@ public class Horse
     private boolean fallen;
     private double confidence;
     private String breed;
+    private ImageIcon breedIcon;
     private JLabel horseLabel;
     private List<Double> speeds;
     private double avgSpeed;
@@ -143,6 +149,35 @@ public class Horse
         return this.breed;
     }
 
+    public void setBreedIcon(ImageIcon newIcon) {
+        int width = newIcon.getIconWidth();
+        int height = newIcon.getIconHeight();
+    
+        // Create a new image that can support transparency
+        BufferedImage combinedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    
+        // Get the graphics object from the image
+        Graphics2D g = combinedImage.createGraphics();
+    
+        // Set the color and draw the circle
+        g.setColor(Color.WHITE);
+        g.fillOval(0, 0, width, height);
+    
+        // Draw the icon on top of the circle
+        g.drawImage(newIcon.getImage(), 0, 0, null);
+    
+        // Dispose the graphics object
+        g.dispose();
+    
+        // Create a new ImageIcon from the combined image
+        this.breedIcon = new ImageIcon(combinedImage);
+    }
+
+    public ImageIcon getBreedIcon()
+    {
+        return this.breedIcon;
+    }
+
     public  JLabel horseFallenGUI()
     {
         if (this.fallen == true)
@@ -178,17 +213,12 @@ public class Horse
         {
             sum += speed;
         }
-        this.avgSpeed = sum/this.speeds.size();
-    }
-
-    public void printPerformanceMetrics()
-    {
-        System.out.println("Horse " + this.name);
-        System.out.println("Avg Speed" + this.avgSpeed);
-        System.out.println("Total races" + this.totalRaces);
-        System.out.println("Total wins" + this.totalWins);
-        System.out.println("Win ratio:" + ((double)this.totalWins/this.totalRaces)*100 + "%");
-        System.out.println("Finishing times" + this.finishingTimes);
+        if (this.speeds.size() == 0){
+            this.avgSpeed = 0;
+        } else {
+            this.avgSpeed = sum/this.speeds.size();
+        }
+       
     }
 
     public JLabel[] returnPerformanceMetricsLabels()
@@ -198,7 +228,11 @@ public class Horse
         labels[1] = new JLabel("Avg Speed: " + String.format("%.2f", this.avgSpeed));
         labels[2] = new JLabel("Total races: " + this.totalRaces);
         labels[3] = new JLabel("Total wins: " + this.totalWins);
-        labels[4] = new JLabel("Win ratio: " + String.format("%.2f", ((double)this.totalWins/this.totalRaces)*100) + "%");
+        if (this.totalRaces == 0) {
+            labels[4] = new JLabel("Win ratio: 0%");
+        } else {
+            labels[4] = new JLabel("Win ratio: " + String.format("%.2f", ((double)this.totalWins/this.totalRaces)*100) + "%");
+        }
         labels[5] = new JLabel("Finishing times: " + this.finishingTimes);
 
         return labels;
