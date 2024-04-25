@@ -948,6 +948,7 @@ public class Race {
                 }
 
                 // Check if any horse has won the race
+                int currentHorse = 0;
                 for (Horse horse : horses) {
                     if (horse != null && raceWonBy(horse)) {
                         ((Timer) e.getSource()).stop(); // Stop the timer
@@ -965,7 +966,7 @@ public class Race {
                             }
                         }
 
-                        if (user.getHorseSelected() == 0) {
+                        if (user.getHorseSelected() == currentHorse) {
                             user.updateBalance(user.getBetAmount());
                             user.setBetAmount(0);
                             user.setHorseSelected(-1);
@@ -1013,6 +1014,7 @@ public class Race {
                         restartButton.setEnabled(true);
                         break;
                     }
+                    currentHorse++;
                 }
 
                 // Repaint the GUI to reflect the new positions of the horses
