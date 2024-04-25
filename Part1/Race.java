@@ -53,15 +53,49 @@ public class Race {
 
         // create and add the horses
         createAndAddHorses();
-        laneAmount = enterLaneAmount(horses.size(), 12, "Enter the amount of lanes ("+horses.size()+"-12)");
+        laneAmount = enterLaneAmount(horses.size(), 12, "Enter the amount of lanes (" + horses.size() + "-12)");
         String option = "";
+        int loopCount = 1;
         do {
 
+            if (loopCount > 1) {
+                addMoreHorses();
+            }
             // start game loop
             startRaceGameLoop();
+            loopCount++;
             option = enterOption("y", "n", "Would you like to start a new Race? (y/n)");
 
         } while (!option.equals("n"));
+    }
+
+    public void addMoreHorses() {
+
+        String addHorseChoice = "";
+        int horseCount = horses.size();
+        do {
+
+            if (horseCount < laneAmount) {
+                addHorseChoice = enterOption("y", "n", "Would you like to add a new horse? (y/n)");
+                if (addHorseChoice.equals("y")) {
+                    createAndAddOneHorse();
+                }
+                horseCount = horses.size();
+            } else {
+                addHorseChoice = "n"; // maximum 12 horses
+            }
+        } while (!addHorseChoice.equals("n"));
+    }
+
+    public void createAndAddOneHorse() {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter the name of the horse: ");
+        String name = sc.nextLine();
+        char symbol = enterHorseSymbol();
+        double confidence = enterConfidence("Enter the confidence of the horse (0-1): ");
+
+        Horse horse = new Horse(symbol, name, confidence);
+        addHorse(horse);
     }
 
     public void startRaceGameLoop() {
@@ -135,8 +169,7 @@ public class Race {
         do {
             System.out.println("Enter the name of the horse: ");
             String name = sc.nextLine();
-            System.out.println("Enter the symbol of the horse: ");
-            char symbol = sc.nextLine().charAt(0);
+            char symbol = enterHorseSymbol();
             double confidence = enterConfidence("Enter the confidence of the horse (0-1): ");
 
             Horse horse = new Horse(symbol, name, confidence);
@@ -186,7 +219,33 @@ public class Race {
         return confidence;
     }
 
-    private int enterLaneAmount (int min, int max, String msg) {
+    private char enterHorseSymbol() {
+        Scanner sc = new Scanner(System.in);
+        char symbol = ' ';
+        boolean validInput = false;
+        do {
+            try {
+                System.out.println("Enter the symbol of the horse: ");
+                String input = sc.nextLine();
+                if (input.length() > 0) {
+                    symbol = input.charAt(0);
+                    if (!Character.isWhitespace(symbol)) {
+                        validInput = true;
+                    } else {
+                        System.out.println("Please enter a valid character.");
+                    }
+                } else {
+                    System.out.println("Please enter something.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("That's not a valid character!");
+                sc.next(); // consume the invalid token
+            }
+        } while (!validInput);
+        return symbol;
+    }
+
+    private int enterLaneAmount(int min, int max, String msg) {
         Scanner sc = new Scanner(System.in);
         int amount = 2; // default 2 lanes
         boolean validInput = false;
@@ -194,10 +253,10 @@ public class Race {
             try {
                 System.out.println(msg);
                 amount = sc.nextInt();
-                if (amount>=min && amount<=max) {
+                if (amount >= min && amount <= max) {
                     validInput = true;
                 } else {
-                    System.out.println("Please enter a number between "+min+" and "+max+".");
+                    System.out.println("Please enter a number between " + min + " and " + max + ".");
                 }
             } catch (InputMismatchException e) {
                 System.out.println("That's not a valid number!");
@@ -263,7 +322,7 @@ public class Race {
         multiplePrint('=', raceLength + 3); // top edge of track
         System.out.println();
 
-        for (Horse horse : horses) { 
+        for (Horse horse : horses) {
             if (horse != null) {
                 printLane(horse);
                 System.out.println();
@@ -317,13 +376,13 @@ public class Race {
     private void printEmptyLane() {
         // print a | for the beginning of the lane
         System.out.print('|');
-    
+
         // print the spaces for the entire lane
-        multiplePrint(' ', raceLength+1);
-    
+        multiplePrint(' ', raceLength + 1);
+
         // print the | for the end of the track
         System.out.print('|');
-    
+
         // print a newline to move to the next line
         System.out.println();
     }
