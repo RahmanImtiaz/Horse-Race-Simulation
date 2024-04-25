@@ -4,6 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.MatteBorder;
 
 /**
  * A frame that displays the gui race of 1 to 3 horses. The frame contains a
@@ -26,6 +28,12 @@ public class RaceFrame extends JFrame {
     private List<JLabel> betsLabelList;
     private int selectedHorseIndex; // bet on horse 0, 1, 2
     private JButton placeBetBtn;
+    private Color sidepanelColour = Color.decode("#191a1f");
+    private Color horseListColour = Color.decode("#2b2d38");
+    private JPanel horsePanel;
+    private JPanel bettingPanel;
+    private JPanel horseListPanel;
+    private JComboBox<String> BettingcomboBox;
 
     public RaceFrame(Color trackColour, int raceLength, int horseNum, List<Horse> horses, User user) {
         this.trackColour = trackColour;
@@ -42,7 +50,7 @@ public class RaceFrame extends JFrame {
 
         for (int i = 0; i < horseNum; i++) {
 
-            JPanel horsePanel = new JPanel() {
+            horsePanel = new JPanel() {
                 @Override
                 protected void paintComponent(Graphics g) {
                     super.paintComponent(g);
@@ -79,7 +87,8 @@ public class RaceFrame extends JFrame {
                 horseDetailsList.add(horseDetails);
 
                 JLabel horseBreedIcon = new JLabel(horses.get(i).getBreedIcon());
-                horseBreedIcon.setBounds(((raceLength) * 10) + 60, 31, horseBreedIcon.getPreferredSize().width, horseBreedIcon.getPreferredSize().height);
+                horseBreedIcon.setBounds(((raceLength) * 10) + 60, 31, horseBreedIcon.getPreferredSize().width,
+                        horseBreedIcon.getPreferredSize().height);
                 horsePanel.add(horseBreedIcon);
             }
 
@@ -110,11 +119,17 @@ public class RaceFrame extends JFrame {
         user.setBetAmount(0);
         user.setHorseSelected(-1);
 
-        JPanel bettingPanel = new JPanel();
+        JPanel sidePanel = new JPanel();
+        sidePanel.setLayout(new BorderLayout());
+
+        sidePanel.setBackground(sidepanelColour);
+        sidePanel.setPreferredSize(new Dimension(300, sidePanel.getHeight()));
+
+        bettingPanel = new JPanel();
         bettingPanel.setLayout(new BoxLayout(bettingPanel, BoxLayout.Y_AXIS));
 
-        bettingPanel.setBackground(Color.DARK_GRAY);
-        bettingPanel.setPreferredSize(new Dimension(300, bettingPanel.getHeight()));
+        bettingPanel.setBackground(sidepanelColour);
+        bettingPanel.setPreferredSize(new Dimension(300, 200));
 
         JLabel bettingLabel = new JLabel("Place your bets here!");
         bettingLabel.setForeground(Color.WHITE);
@@ -129,9 +144,9 @@ public class RaceFrame extends JFrame {
         }
 
         String[] horseNames = horseNamesList.toArray(new String[0]);
-        JComboBox<String> comboBox = new JComboBox<>(horseNames);
-        comboBox.setMaximumSize(new Dimension(100, 30));
-        bettingPanel.add(createCenteredBox(comboBox));
+        BettingcomboBox = new JComboBox<>(horseNames);
+        BettingcomboBox.setMaximumSize(new Dimension(100, 30));
+        bettingPanel.add(createCenteredBox(BettingcomboBox));
 
         JLabel oddsLabel = new JLabel("");
         oddsLabel.setForeground(Color.WHITE);
@@ -148,11 +163,11 @@ public class RaceFrame extends JFrame {
         bettingPanel.repaint();
 
         // Add an ActionListener to the JComboBox
-        comboBox.addActionListener(new ActionListener() {
+        BettingcomboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Get the selected item
-                selectedHorseIndex = comboBox.getSelectedIndex();
+                selectedHorseIndex = BettingcomboBox.getSelectedIndex();
 
                 // Find the Horse object based on the selected index
                 double odds = horses.get(selectedHorseIndex).calculateOdds(raceLength);
@@ -197,7 +212,7 @@ public class RaceFrame extends JFrame {
 
                     if (betAmount <= user.getBalance()) {
                         user.setBetAmount(betAmount);
-                        user.setHorseSelected(comboBox.getSelectedIndex());
+                        user.setHorseSelected(BettingcomboBox.getSelectedIndex());
 
                         betAmountField.setText("");
                         betAmountLabel.setText("Bet Amount: " + user.getBetAmount());
@@ -214,7 +229,97 @@ public class RaceFrame extends JFrame {
 
         bettingPanel.add(createCenteredBox(placeBetBtn));
 
-        this.add(bettingPanel, BorderLayout.EAST);
+        sidePanel.add(bettingPanel, BorderLayout.NORTH);
+        sidePanel.add(horseListPanel(), BorderLayout.CENTER);
+
+        this.add(sidePanel, BorderLayout.EAST);
+    }
+
+    public JPanel horseListPanel() {
+        horseListPanel = new JPanel();
+        horseListPanel.setLayout(new BoxLayout(horseListPanel, BoxLayout.Y_AXIS));
+        horseListPanel.setPreferredSize(new Dimension(300, horseListPanel.getHeight()));
+        horseListPanel.setBorder(new MatteBorder(10, 10, 10, 10, sidepanelColour));
+        horseListPanel.setBackground(horseListColour);
+
+        for (Horse horse : horses) {
+            JButton horseButton = new JButton(horse.getName());
+            horseButton.setBackground(bettingPanel.getBackground());
+            horseButton.setPreferredSize(new Dimension(600, 30));
+            horseButton.setIcon(horse.getBreedIcon());
+            horseButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    // Create a new JDialog
+                    JDialog dialog = new JDialog();
+                    dialog.setLayout(new GridLayout(3, 2));
+
+                    // Create JTextFields for the horse's name and confidence
+                    JTextField nameField = new JTextField(horse.getName());
+                    JTextField confidenceField = new JTextField(String.valueOf(horse.getConfidence()));
+
+                    confidenceField.setEditable(false);
+
+                    // Create JButtons for saving and canceling
+                    JButton saveButton = new JButton("Save");
+                    saveButton.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            // Update the horse's name and confidence
+                            horse.setName(nameField.getText());
+                            horse.setConfidence(Double.parseDouble(confidenceField.getText()));
+
+                            // Update the horse's details
+                            updateHorseDetails(horses.indexOf(horse));
+                            horseButton.setText(horse.getName());
+
+                            for (int i = 0; i < BettingcomboBox.getItemCount(); i++) {
+                                // Get the current item
+                                String currentItem = BettingcomboBox.getItemAt(i);
+                            
+                                // Modify the current item
+                                int count = i + 1;
+                                String newItem = "Horse " + count + ": " + horses.get(i).getName();
+                            
+                                // Insert the new item at the current index
+                                BettingcomboBox.insertItemAt(newItem, i);
+                            
+                                // Remove the old item
+                                BettingcomboBox.removeItemAt(i + 1);
+                            }
+
+
+                            // Close the dialog
+                            dialog.dispose();
+                        }
+                    });
+
+                    JButton cancelButton = new JButton("Cancel");
+                    cancelButton.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            // Close the dialog without saving
+                            dialog.dispose();
+                        }
+                    });
+
+                    // Add the JTextFields and JButtons to the dialog
+                    dialog.add(new JLabel("Name:"));
+                    dialog.add(nameField);
+                    dialog.add(new JLabel("Confidence:"));
+                    dialog.add(confidenceField);
+                    dialog.add(saveButton);
+                    dialog.add(cancelButton);
+
+                    // Show the dialog
+                    dialog.pack();
+                    dialog.setVisible(true);
+                }
+            });
+            horseListPanel.add(createCenteredBox(horseButton));
+        }
+
+        return horseListPanel;
     }
 
     private Box createCenteredBox(JComponent component) {
