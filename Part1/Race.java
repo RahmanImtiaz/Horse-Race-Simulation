@@ -52,6 +52,7 @@ public class Race {
     public void startRace() {
 
         // create and add the horses
+        raceLength = enterRaceLength();
         createAndAddHorses();
         laneAmount = enterLaneAmount(horses.size(), 12, "Enter the amount of lanes (" + horses.size() + "-12)");
         String option = "";
@@ -67,6 +68,21 @@ public class Race {
             option = enterOption("y", "n", "Would you like to start a new Race? (y/n)");
 
         } while (!option.equals("n"));
+    }
+
+    public int enterRaceLength() {
+
+        String choice = "";
+        int newRaceLength = raceLength;
+        do {
+                choice = enterOption("y", "n", "Your current race length is " + raceLength + ". Would you like to change it? (y/n)");
+                if (choice.equals("y")) {
+                    newRaceLength = enterLaneAmount(10, 150, "Enter the new race length (10-150)");
+                    return newRaceLength;
+                }
+        } while (!choice.equals("n"));
+
+        return newRaceLength;
     }
 
     public void addMoreHorses() {
