@@ -140,7 +140,6 @@ public class Race {
                 if (horse != null && raceWonBy(horse)) {
                     finished = true;
                     System.out.println("And the winner is " + horse.getName() + " ");
-                    break;
                 }
             }
 
