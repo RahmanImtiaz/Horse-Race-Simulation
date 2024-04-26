@@ -37,6 +37,8 @@ public class Race {
     private ArrayList<Object[]> breedItems;
     private ArrayList<String> accessoriesList;
     private JButton addHorsebtn;
+    private JComboBox breedsMenu;
+    private JComboBox accessoriesMenu;
 
     /**
      * Constructor for objects of class Race
@@ -119,7 +121,6 @@ public class Race {
             return false;
         }
     }
-
 
     public void startRaceGUI() {
         frame = new JFrame("HorseRaceSimulator");
@@ -219,6 +220,7 @@ public class Race {
         JButton submit = new JButton("Submit");
         submit.setAlignmentX(Component.CENTER_ALIGNMENT);
         submit.addActionListener(e -> {
+
             try {
                 int tempRaceLength = Integer.parseInt(raceLengthTextField.getText());
                 int tempHorseNum = Integer.parseInt(numTracksTextField.getText());
@@ -276,6 +278,15 @@ public class Race {
         submit.addActionListener(e -> {
 
             try {
+
+                Object[] newSelectedItem = (Object[]) breedsMenu.getSelectedItem();
+                String breedname = (String) newSelectedItem[1];
+                if ("Select a Horse".equals(breedname)) {
+                    JOptionPane.showMessageDialog(null, "Please select a horse.", "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    breedItems.add(newSelectedItem);
+                }
+
                 String name = nameTextFields.get(currentHorseCount - 2).getText();
                 double confidence = Double.parseDouble(confidenceTextFields.get(currentHorseCount - 2).getText());
                 ImageIcon icon = null;
@@ -284,6 +295,15 @@ public class Race {
                     Object[] selectedItem = breedItems.get(currentHorseCount - 2);
                     icon = (ImageIcon) selectedItem[0];
                     breed = (String) selectedItem[1];
+                }
+                System.out.println("breed" + breed);
+
+                String selectedaccessories = (String) accessoriesMenu.getSelectedItem();
+                if ("Select an Accessory".equals(selectedaccessories)) {
+                    JOptionPane.showMessageDialog(null, "Please select an accessory.", "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                } else {
+                    accessoriesList.add(selectedaccessories);
                 }
 
                 String accessories = null;
@@ -325,6 +345,15 @@ public class Race {
         newHorseBtn.addActionListener(e -> {
 
             try {
+
+                Object[] newSelectedItem = (Object[]) breedsMenu.getSelectedItem();
+                String breedname = (String) newSelectedItem[1];
+                if ("Select a Horse".equals(breedname)) {
+                    JOptionPane.showMessageDialog(null, "Please select a horse.", "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    breedItems.add(newSelectedItem);
+                }
+
                 String name = nameTextFields.get(currentHorseCount - 2).getText();
                 double confidence = Double.parseDouble(confidenceTextFields.get(currentHorseCount - 2).getText());
                 ImageIcon icon = null;
@@ -333,6 +362,15 @@ public class Race {
                     Object[] selectedItem = breedItems.get(currentHorseCount - 2);
                     icon = (ImageIcon) selectedItem[0];
                     breed = (String) selectedItem[1];
+                }
+                System.out.println("breed" + breed);
+
+                String selectedaccessories = (String) accessoriesMenu.getSelectedItem();
+                if ("Select an Accessory".equals(selectedaccessories)) {
+                    JOptionPane.showMessageDialog(null, "Please select an accessory.", "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                } else {
+                    accessoriesList.add(selectedaccessories);
                 }
 
                 String accessories = null;
@@ -413,6 +451,15 @@ public class Race {
         submit.addActionListener(e -> {
 
             try {
+
+                Object[] newSelectedItem = (Object[]) breedsMenu.getSelectedItem();
+                String breedname = (String) newSelectedItem[1];
+                if ("Select a Horse".equals(breedname)) {
+                    JOptionPane.showMessageDialog(null, "Please select a horse.", "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    breedItems.add(newSelectedItem);
+                }
+
                 String name = nameTextFields.get(currentHorseCount - 2).getText();
                 double confidence = Double.parseDouble(confidenceTextFields.get(currentHorseCount - 2).getText());
                 ImageIcon icon = null;
@@ -421,6 +468,14 @@ public class Race {
                     Object[] selectedItem = breedItems.get(currentHorseCount - 2);
                     icon = (ImageIcon) selectedItem[0];
                     breed = (String) selectedItem[1];
+                }
+
+                String selectedaccessories = (String) accessoriesMenu.getSelectedItem();
+                if ("Select an Accessory".equals(selectedaccessories)) {
+                    JOptionPane.showMessageDialog(null, "Please select an accessory.", "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                } else {
+                    accessoriesList.add(selectedaccessories);
                 }
 
                 String accessories = null;
@@ -559,7 +614,7 @@ public class Race {
         }
 
         // Create the JComboBox and set its model
-        JComboBox breedsMenu = new JComboBox(model);
+        breedsMenu = new JComboBox(model);
 
         // Set a custom renderer to display the icons
         breedsMenu.setRenderer(new DefaultListCellRenderer() {
@@ -577,19 +632,6 @@ public class Race {
             }
         });
 
-        breedsMenu.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Object[] newSelectedItem = (Object[]) breedsMenu.getSelectedItem();
-                String name = (String) newSelectedItem[1];
-                if ("Select a Horse".equals(name)) {
-                    JOptionPane.showMessageDialog(null, "Please select a horse.", "Error", JOptionPane.ERROR_MESSAGE);
-                } else {
-                    breedItems.add(newSelectedItem);
-                }
-            }
-        });
-
         breedsMenu.setMaximumSize(new Dimension(100, 30));
         breedsMenu.setAlignmentX(Component.CENTER_ALIGNMENT);
         horseDesignPanel.add(breedsMenu);
@@ -600,25 +642,12 @@ public class Race {
         accessoriesLabel.setForeground(Color.white);
         horseDesignPanel.add(accessoriesLabel);
 
-        JComboBox accessoriesMenu = new JComboBox();
+        accessoriesMenu = new JComboBox();
         accessoriesMenu.addItem("Select an Accessory");
         accessoriesMenu.addItem("Saddle");
         accessoriesMenu.addItem("Horseshoes");
         accessoriesMenu.setMaximumSize(new Dimension(100, 30));
         horseDesignPanel.add(accessoriesMenu);
-
-        accessoriesMenu.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String accessories = (String) accessoriesMenu.getSelectedItem();
-                if ("Select an Accessory".equals(accessories)) {
-                    JOptionPane.showMessageDialog(null, "Please select an accessory.", "Error",
-                            JOptionPane.ERROR_MESSAGE);
-                } else {
-                    accessoriesList.add(accessories);
-                }
-            }
-        });
 
         nameTextFields.add(nameTextField);
         confidenceTextFields.add(confidenceTextField);
