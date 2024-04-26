@@ -5,6 +5,7 @@ This is a Horse Race Simulation project that uses Java GUI to simulate a horse r
 The project is divided into two parts: `Part1` and `Part2`. `Part1` contains the initial implementation of the horse race simulation without a GUI. `Part2` extends `Part1` by adding a GUI and additional features like a betting system and customization of horses and tracks.
 
 ## Getting Started
+
 ### Setup Steps
 
 1. Ensure you have Java installed on your system. If not, you can download it from [here](https://www.oracle.com/uk/java/technologies/downloads/#java21).
