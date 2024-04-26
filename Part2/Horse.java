@@ -34,22 +34,9 @@ public class Horse {
     private String accessory;
     private Color color;
 
-    // Constructor of class Horse
     /**
      * Constructor for objects of class Horse
      */
-    public Horse(char horseSymbol, String horseName, double horseConfidence) {
-        this.name = horseName;
-        this.symbol = horseSymbol;
-        this.confidence = horseConfidence;
-        this.avgSpeed = 0;
-        this.totalRaces = 0;
-        this.totalWins = 0;
-        this.speeds = new ArrayList<>();
-        this.finishingTimes = new ArrayList<>();
-    }
-
-    // for gui
     public Horse() {
         this.name = "UNDEFINED";
         this.breed = "UNDEFINED";
