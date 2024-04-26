@@ -39,17 +39,17 @@ Please refer to your IDE's documentation for more specific instructions.
 - When running the GUI implementation from Part1, press the start button.
 - Enter the track length, this can be between 10 and 100 meters.
 - Enter how many lanes you would like, this can be between 2 and 10 lanes.
-- And then you can chose what colour you want for the track.
+- And then you can cho0se what colour you want for the track.
 
 ### How to add Horses
 - In the beginning, you will be asked to make at least 2 horses, before being allowed onto the race screen. The initial screen for adding horses, will have two buttons "Submit & Start Race" and "Submit & add Another Horse".
 - The "Submit & Start Race" button, saves and creates the current horse, and then opens the race frame to start the race. This option is only available after 2 horses are made.
 - "Submit & add Another Horse" button, saves and creates the current horse, and then allows for another horse to be created and added.
 - When on the racing screen, you can add horses to the unoccupied lanes using the "Add Horse" button on top. This button is only accessable when there are unoccupied lanes, before and after a race. They cannot be accessed during a race or if there arent any more free lanes.
-- You can then chose the colour, name, confidence (0-1), breed and accessory for that horse.
+- You can then cho0se the colour, name, confidence (0-1), breed and accessory for that horse.
 
 ### How to view Horse Stats
-- When on the horse window, you can press the "Show Stats" on the top of the window. Then on a small pop up window, you can chose the horse you want to view.
+- When on the horse window, you can press the "Show Stats" on the top of the window. Then on a small pop up window, you can choose the horse you want to view.
 
 ### Changing the horse name
 - There is a list of horses on the right side panel of the raceing frame (under betting panel).
