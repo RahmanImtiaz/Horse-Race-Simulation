@@ -229,8 +229,6 @@ public class Race {
                     raceLength = tempRaceLength;
                     horseNum = tempHorseNum;
                     trackColour = colorChooser.getColor();
-                    System.out.println("raceLength: " + raceLength + ", horseNum: " + horseNum + ", trackColour: "
-                            + trackColour.toString());
                     customiseHorses();
                 } else {
                     JOptionPane.showMessageDialog(null,
@@ -296,7 +294,6 @@ public class Race {
                     icon = (ImageIcon) selectedItem[0];
                     breed = (String) selectedItem[1];
                 }
-                System.out.println("breed" + breed);
 
                 String selectedaccessories = (String) accessoriesMenu.getSelectedItem();
                 if ("Select an Accessory".equals(selectedaccessories)) {
@@ -318,8 +315,6 @@ public class Race {
                     horses.get(currentHorseCount - 2).setBreed(breed);
                     horses.get(currentHorseCount - 2).setBreedIcon(icon);
                     horses.get(currentHorseCount - 2).setAccessory(accessories);
-                    System.out.println("Name: " + horses.get(currentHorseCount - 2).getName() + ", Confidence: "
-                            + horses.get(currentHorseCount - 2).getConfidence());
 
                 } else {
                     JOptionPane.showMessageDialog(null,
@@ -363,7 +358,6 @@ public class Race {
                     icon = (ImageIcon) selectedItem[0];
                     breed = (String) selectedItem[1];
                 }
-                System.out.println("breed" + breed);
 
                 String selectedaccessories = (String) accessoriesMenu.getSelectedItem();
                 if ("Select an Accessory".equals(selectedaccessories)) {
@@ -385,8 +379,6 @@ public class Race {
                     horses.get(currentHorseCount - 2).setBreed(breed);
                     horses.get(currentHorseCount - 2).setBreedIcon(icon);
                     horses.get(currentHorseCount - 2).setAccessory(accessories);
-                    System.out.println("Name: " + horses.get(currentHorseCount - 2).getName() + ", Confidence: "
-                            + horses.get(currentHorseCount - 2).getConfidence());
 
                 } else {
                     JOptionPane.showMessageDialog(null,
@@ -490,8 +482,6 @@ public class Race {
                     horses.get(currentHorseCount - 2).setBreed(breed);
                     horses.get(currentHorseCount - 2).setBreedIcon(icon);
                     horses.get(currentHorseCount - 2).setAccessory(accessories);
-                    System.out.println("Name: " + horses.get(currentHorseCount - 2).getName() + ", Confidence: "
-                            + horses.get(currentHorseCount - 2).getConfidence());
 
                 } else {
                     JOptionPane.showMessageDialog(null,
@@ -585,7 +575,6 @@ public class Race {
         horseDesignPanel.add(label3);
 
         String currentDirectory = System.getProperty("user.dir");
-        System.out.println("Current working directory : " + currentDirectory);
         // Create an array to hold the icons
         ImageIcon[] icons = new ImageIcon[5];
         icons[0] = null;
