@@ -18,7 +18,7 @@ This project is built with Java and uses the Swing library for the graphical use
 
 ### Usage Guidelines (Command Line)
 
-1. To run the program, navigate to the directory containing `main.java` in either `Part1` or `Part2`.
+1. To run the program, navigate to the directory containing `main.java` in either `Part1` or `Part2` using the command `cd Part1` or `cd Part2`.
 2. Compile the Java files using the command `javac *.java`.
 3. Run the program using the command `java main`.
 
@@ -33,6 +33,43 @@ If you prefer to use an Integrated Development Environment (IDE) instead of the 
 
 Please refer to your IDE's documentation for more specific instructions.
 
+## GUI Simulation Instrctions (How to Play)
+### Part 2 (GUI):
+#### How to customise Track
+- When running the GUI implementation from Part1, press the start button.
+- Enter the track length, this can be between 10 and 100 meters.
+- Enter how many lanes you would like, this can be between 2 and 10 lanes.
+- And then you can chose what colour you want for the track.
+
+### How to add Horses
+- In the beginning, you will be asked to make at least 2 horses, before being allowed onto the race screen. The initial screen for adding horses, will have two buttons "Submit & Start Race" and "Submit & add Another Horse".
+- The "Submit & Start Race" button, saves and creates the current horse, and then opens the race frame to start the race. This option is only available after 2 horses are made.
+- "Submit & add Another Horse" button, saves and creates the current horse, and then allows for another horse to be created and added.
+- When on the racing screen, you can add horses to the unoccupied lanes using the "Add Horse" button on top. This button is only accessable when there are unoccupied lanes, before and after a race. They cannot be accessed during a race or if there arent any more free lanes.
+- You can then chose the colour, name, confidence (0-1), breed and accessory for that horse.
+
+### How to view Horse Stats
+- When on the horse window, you can press the "Show Stats" on the top of the window. Then on a small pop up window, you can chose the horse you want to view.
+
+### Changing the horse name
+- There is a list of horses on the right side panel of the raceing frame (under betting panel).
+- You can press on a horses name, and a pop up window will appear, presenting that horses name and confidence.
+- The name can be modified and saved, but the confidence can not be changed (only viewed).
+
+### Placing a bet
+- Each round, you can place a bet on any horse on the tracks.
+- You will be allocated an initial balance of £1000.
+- Using the drop down menu, you can select the horse you want to bet on.
+- Then you can enter an amount you want to bet on that horse, minimum 0, and maximum bet is ur balance amount.
+- The betting feature is accessed before a race, and can be used to bet on a horse. 
+
+### Start Race and New Race
+- Both buttons are on the top of the race window. 
+- Pressing Start Race, will let the current race begin.
+- Pressing New Race, opens up a new race, with the same horses and details.
+- Start Race button is only available once before a race (to start it).
+- New Race button is only available after the current race has ended.
+
 ## Files in the Project
 
 - `Horse.java`: This file contains the Horse class which is used to create horse objects for the simulation.
@@ -45,7 +82,3 @@ Please refer to your IDE's documentation for more specific instructions.
 ## Contributing
 
 Contributions are welcome. Please fork the repository and create a pull request with your changes.
-
-## License
-
-This project is licensed under the MIT License.

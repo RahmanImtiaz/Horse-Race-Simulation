@@ -196,7 +196,7 @@ public class Race {
         raceLengthTextField.setAlignmentX(Component.CENTER_ALIGNMENT);
         trackDesignPanel.add(raceLengthTextField);
 
-        JLabel label3 = new JLabel("How many tracks would you like? (2-10)");
+        JLabel label3 = new JLabel("How many lanes would you like? (2-10)");
         label3.setForeground(Color.white);
         label3.setAlignmentX(Component.CENTER_ALIGNMENT);
         trackDesignPanel.add(label3);
@@ -269,7 +269,7 @@ public class Race {
 
         addHorseForm(nameTextFields, confidenceTextFields, breedItems, accessoriesList);
 
-        JButton submit = new JButton("Submit and Start Race");
+        JButton submit = new JButton("Submit & Start Race");
         submit.setMaximumSize(new Dimension(200, 50));
         submit.setEnabled(false); // Disable the button initially, so that minimum 2 horses are added
         submit.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -329,7 +329,7 @@ public class Race {
             startGUI();
         });
 
-        JButton newHorseBtn = new JButton("Submit add Another Horse");
+        JButton newHorseBtn = new JButton("Submit & add Another Horse");
         newHorseBtn.setMaximumSize(new Dimension(200, 50));
         if (horses.size() < horseNum) {
             newHorseBtn.setEnabled(true);
@@ -761,6 +761,12 @@ public class Race {
 
                         restartButton.setEnabled(true);
 
+                        if (horses.size() < horseNum) {
+                            addHorsebtn.setEnabled(true);
+                        } else {
+                            addHorsebtn.setEnabled(false);
+                        }
+
                         break;
 
                     } else if (allHorsesHaveFallen()) {
@@ -788,6 +794,13 @@ public class Race {
                         }
 
                         restartButton.setEnabled(true);
+
+                        if (horses.size() < horseNum) {
+                            addHorsebtn.setEnabled(true);
+                        } else {
+                            addHorsebtn.setEnabled(false);
+                        }
+
                         break;
                     }
                     currentHorse++;
@@ -799,11 +812,6 @@ public class Race {
                 // update bets label
                 raceFrame.updateStatDetails(user);
 
-                if (horses.size() < horseNum) {
-                    addHorsebtn.setEnabled(true);
-                } else {
-                    addHorsebtn.setEnabled(false);
-                }
             }
         });
 
